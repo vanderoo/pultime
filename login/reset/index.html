@@ -1,11 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Forgot | Pultime</title>
-
+  <title>Forgot Password | Pultime</title>
   <link rel="stylesheet" href="../../resources/styles/reset_password.css">
+  <script src="../../resources/scripts/reset_password.js"></script>
 </head>
 <body>
-  <h1>Forgot PAGE</h1>
+  <div class="container">
+    <input type="checkbox" id="check">
+    <div class="New_pass form">
+      <a href="index.html"><image src="../../resources/icon/maki_arrow.jpg"></image></a>
+      <header>Reset Password</header>
+      <form action="#" id="resetForm">
+        <div class="password-field">
+          <input type="password" id="newPassword" placeholder="New password">
+          <button type="button" class="toggle-password" onclick="togglePassword('newPassword')"></button>
+          <small class="error" id="newPasswordError"></small>
+        </div>
+        <div class="password-field">
+          <input type="password" id="confirmPassword" placeholder="Confirm New password">
+          <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')"></button>
+          <small class="error" id="confirmPasswordError"></small>
+        </div>
+        <input type="button" class="button" value="Continue" onclick="validateForm()">
+      </form>
+    </div>
+  </div>
 </body>
 </html>
+

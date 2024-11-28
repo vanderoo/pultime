@@ -1,4 +1,3 @@
-
 const loginBtn = document.querySelector('.login .button');
 const signupBtn = document.querySelector('.registration .button');
 
