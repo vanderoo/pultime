@@ -1,11 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>MyCalendar | Pultime</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home | Pultime</title>
 
+  <!-- FullCalendar CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar/main.min.css" />
+
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="./resources/styles/home.css">
 </head>
 <body>
-  <a href="./login">Login</a>
+  <!-- Bar Atas -->
+  <div class="top-bar">
+    <div class="logo">
+      <img src="./resources/images/pultime-logo.png" alt="App Logo">
+      <span>Good Morning</span>
+    </div>
+    <div class="profile">
+      <span>Andrew Smith</span>
+      <img src="./resources/images/profile-icon.png" alt="Profile Icon">
+    </div>
+  </div>
+
+  <!-- Wrapper untuk Sidebar dan Main Content -->
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Home</h2>
+      <nav>
+        <button id="kalenderku">KalenderKu</button>
+        <button id="kelas">Kelas +</button>
+        <button id="group">Group +</button>
+      </nav>
+      <button id="logout" class="logout">Logout Account</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="calendar-container">
+        <div id="calendar"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- FullCalendar Script -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar/main.min.js"></script>
+
+  <!-- Custom JavaScript -->
+  <script src="./resources/scripts/home.js"></script>
 </body>
 </html>
