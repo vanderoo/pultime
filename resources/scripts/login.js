@@ -20,7 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
         username: username,
         password: password
       };
-  
+      if (!email) {
+        alert('Email harus diisi!');
+        return;
+      }
+    
+      if (!password) {
+        alert('Password harus diisi!');
+        return;
+      }
+      
       fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -49,4 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
   });
-  
+
+function togglePassword() {
+  const passwordInput = document.getElementById('password');
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+  } else {
+    passwordInput.type = 'password';
+  }
+}
