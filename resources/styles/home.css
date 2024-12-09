@@ -26,8 +26,8 @@ body {
   }
   
   .top-bar .logo img {
-    height: 30px;
-    margin-right: 10px;
+    height: 150px;
+    margin-right: 6px;
   }
   
   .top-bar .profile {
@@ -36,8 +36,8 @@ body {
   }
   
   .top-bar .profile img {
-    height: 30px;
-    width: 30px;
+    height: 45px;
+    width: 45px;
     border-radius: 50%;
     margin-left: 10px;
   }
