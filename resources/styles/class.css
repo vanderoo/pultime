@@ -43,21 +43,30 @@ body {
 }
 
   /* Wrapper untuk Sidebar dan Konten Utama */
-.wrapper {
+  .wrapper {
     display: flex;
-    flex: 1;
-    height: calc(100vh - 50px); /* Mengurangi tinggi top bar */
-    overflow: hidden;
-}
+    justify-content: space-between;
+  }
 
-  /* Sidebar */
-.sidebar {
+  .sidebar {
     width: 200px;
     background-color: #004695;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 15px;
     color: #fff;
-}
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 20px;
+  }
+
+  .right-sidebar {
+    width: 200px;
+    background-color: #004695;
+    padding: 15px;
+    color: #fff;
+  }
+
 
 .sidebar h2 {
     margin-bottom: 20px;
@@ -66,7 +75,7 @@ body {
 
 .sidebar nav button {
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     padding: 10px;
     cursor: pointer;
     border: none;
@@ -82,8 +91,31 @@ body {
     color: #fff;
 }
 
-.logout {
+.right-sidebar nav button {
+    width: 100%;
     margin-top: 20px;
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #fff;
+    color: #004695;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .right-sidebar nav button:hover {
+    background-color: #002c5f;
+    color: #fff;
+  }
+
+  .right-sidebar h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+.logout {
+    margin-top: 500px;
     background-color: #ff4d4d;
     color: #fff;
     border: none;
@@ -94,6 +126,21 @@ body {
 }
 
 .logout:hover {
+    background-color: #b32424;
+}
+
+.keluar-kelas {
+    margin-top: 685px;
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.keluar-kelas:hover {
     background-color: #b32424;
 }
 
