@@ -1,11 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Team | Pultime</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teams | Pultime</title>
 
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="../resources/styles/team.css">
 </head>
 <body>
-  <h1>TEAM PAGE</h1>
-</body>
-</html>
+  <!-- Bar Atas -->
+  <div class="top-bar">
+    <div class="logo">
+      <img src="../resources/images/pultime-logo.png" alt="App Logo">
+    </div>
+    <div class="profile">
+      <span>Andrew Smith</span>
+      <img src="../resources/images/profile.jpg" alt="Profile Icon">
+    </div>
+  </div>
+  <!-- to do/ in p/ done Bar -->
+<div class="info-bar">
+  <h1 class="TD">TO DO</h1>
+  <div class="IPR"><center><h1>IN PROGRESS</h1></center></div>
+  <h1 class="DN">DONE</h1>
+</div>
+
+  <!-- Wrapper untuk Sidebar dan Main Content -->
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Home</h2>
+      <nav>
+        <button id="kalenderku">KalenderKu</button>
+        <button id="kelas">Kelas +</button>
+        <button id="group">Group +</button>
+      </nav>
+      <button id="logout" class="logout">Logout Account</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="calendar-container">
+        <div id="calendar"></div>
+      </div>
+    </main>
+
+    <aside class="right-sidebar">
+      <nav>
+      <button id="Tugas_baru">Tambah Tugas</button>
+    </nav>
+    <button id="logout" class="keluar-kelas">Keluar kelompok</button>
+    </aside>
+  </div>
+
+  <!-- Custom JavaScript -->
+  <script src="../resources/scripts/team.js"></script>
+</body></html>

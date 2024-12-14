@@ -1,0 +1,113 @@
+/* General Styling untuk Home Page */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  /* Bar atas */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #004695;
+    padding: 10px 20px;
+    color: #fff;
+    height: 50px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Top bar logo dan profile */
+  .top-bar .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .top-bar .logo img {
+    height: 150px;
+    margin-right: 6px;
+  }
+  
+  .top-bar .profile {
+    display: flex;
+    align-items: center;
+  }
+  
+  .top-bar .profile img {
+    height: 45px;
+    width: 45px;
+    border-radius: 50%;
+    margin-left: 10px;
+  }
+  
+  /* Wrapper untuk Sidebar dan Konten Utama */
+  .wrapper {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 50px); /* Mengurangi tinggi top bar */
+    overflow: hidden;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 200px;
+    background-color: #004695;
+    padding: 20px;
+    box-sizing: border-box;
+    color: #fff;
+  }
+  
+  .sidebar h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .sidebar nav button {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #fff;
+    color: #004695;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .sidebar nav button:hover {
+    background-color: #002c5f;
+    color: #fff;
+  }
+  
+  .logout {
+    margin-top: 20px;
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+  }
+  
+  .logout:hover {
+    background-color: #b32424;
+  }
+  
+  /* Main Content */
+  .main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #fafafa;
+    overflow-y: auto;
+  }
+  
+  /* Kalender Container */
+  .calendar-container {
+    margin: auto;
+    max-width: 900px;
+  }
+  
