@@ -1,59 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teams | Pultime</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team | Pultime</title>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="../resources/styles/team.css">
+    <!-- FullCalendar CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar/main.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../resources/styles/sidebar.css">
+    <link rel="stylesheet" href="../resources/styles/team.css">
 </head>
+
 <body>
-  <!-- Bar Atas -->
-  <div class="top-bar">
-    <div class="logo">
-      <img src="../resources/images/pultime-logo.png" alt="App Logo">
+    <!-- Sidebar Kiri -->
+    <div class="sidebar">
+        <div class="user-profile">
+            <h2>PROFILE</h2>
+            <p id="current-user-username" class="username">...</p>
+        </div>
+        <div class="menu">
+            <div class="item">
+                <img src="../resources/images/kalendar.svg" alt="" height="20px" width="20px">
+                <a href="../">MyCalendar</a>
+            </div>
+            <div class="item">
+                <img src="../resources/images/kelas.svg" alt="" height="20px" width="20px">
+                <div class="dropdown">
+                    <div class="dropdown-toggle">
+                        <a href="#">Class</a>
+                        <img class="arrow" src="../resources/images/arrowdrop.svg" alt="" height="15px">
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="../class">5A</a>
+                        <a href="../class">7C</a>
+                        <a href="../class">5C</a>
+                    </div>
+                </div>
+                <img id="add-class" class="tambah" src="../resources/images/tambah.svg" alt="" height="20px"
+                    width="20px">
+                <div id="class-popup" class="popup-dropdown">
+                    <div id="create-class-option" class="menu-item">Create Class</div>
+                    <div id="join-class-option" class="menu-item">Join Class</div>
+                </div>
+            </div>
+            <div class="item">
+                <img src="../resources/images/group.svg" alt="" height="20px" width="20px">
+                <div class="dropdown">
+                    <div class="dropdown-toggle">
+                        <a href="#">Team</a>
+                        <img class="arrow" src="../resources/images/arrowdrop.svg" alt="" height="15px">
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="../team">Group A</a>
+                        <a href="../team">Group B</a>
+                        <a href="../team">Group C</a>
+                    </div>
+                </div>
+                <img id="add-team" class="tambah" src="../resources/images/tambah.svg" alt="" height="20px" width="20px">
+                <div id="team-popup" class="popup-dropdown">
+                    <div id="create-team-option" class="menu-item">Create Team</div>
+                    <div id="join-team-option" class="menu-item">Join Team</div>
+                </div>
+            </div>
+        </div>
+        <div class="logout">
+            <img src="../resources/images/logout.svg" alt="">
+            <a href="#">Logout Account</a>
+        </div>
     </div>
-    <div class="profile">
-      <span>Andrew Smith</span>
-      <img src="../resources/images/profile.jpg" alt="Profile Icon">
+
+    <!-- Kontainer Utama -->
+    <div class="content-container">
+        <!-- FullCalendar di Tengah -->
+        <div class="content">
+            
+        </div>
+
+        <!-- Sidebar Kanan -->
+        <div class="side-content">
+            <h4>PULTIME</h4>
+            <div class="class-info">
+                <h5>Team Name</h5>
+            </div>
+            <div class="task">
+                <img src="../resources/images/task.svg" alt="" width="20px" height="20px">
+                <p>Task</p>
+                <img id="add-task" class="tambah" src="../resources/images/tambah.svg" alt="" height="20px"
+                    width="20px">
+            </div>
+            <div class="leave-class">
+                <img src="../resources/images/logout.svg" alt="">
+                <a href="#">Leave Team</a>
+            </div>
+        </div>
     </div>
-  </div>
-  <!-- to do/ in p/ done Bar -->
-<div class="info-bar">
-  <h1 class="TD">TO DO</h1>
-  <div class="IPR"><center><h1>IN PROGRESS</h1></center></div>
-  <h1 class="DN">DONE</h1>
-</div>
 
-  <!-- Wrapper untuk Sidebar dan Main Content -->
-  <div class="wrapper">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <h2>Home</h2>
-      <nav>
-        <button id="kalenderku">KalenderKu</button>
-        <button id="kelas">Kelas +</button>
-        <button id="group">Group +</button>
-      </nav>
-      <button id="logout" class="logout">Logout Account</button>
-    </aside>
+    <div id="create-class-popup" class="popup-overlay">
+        <div class="popup">
+            <button class="close" id="close-create-class">&times;</button>
+            <h2>Create Class</h2>
+            <form id="create-class-form">
+                <input type="text" id="class-name" placeholder="Class Name" required>
+                <div id="course-container">
+                    <div class="course-item">
+                        <input type="text" name="course[]" placeholder="Course Name" required>
+                        <button type="button" class="remove-course" style="display: none;">&times;</button>
+                    </div>
+                </div>
+                <button type="button" id="add-course">Add Course</button>
+                <button type="submit">Create</button>
+            </form>
+        </div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="calendar-container">
-        <div id="calendar"></div>
-      </div>
-    </main>
 
-    <aside class="right-sidebar">
-      <nav>
-      <button id="Tugas_baru">Tambah Tugas</button>
-    </nav>
-    <button id="logout" class="keluar-kelas">Keluar kelompok</button>
-    </aside>
-  </div>
+    <!-- Popup Form untuk Join Class -->
+    <div id="join-class-popup" class="popup-overlay">
+        <div class="popup">
+            <button class="close" id="close-join-class">&times;</button>
+            <h2>Join Class</h2>
+            <form id="join-class-form">
+                <input type="text" id="class-code" placeholder="Class Code" required>
+                <button type="submit">Join</button>
+            </form>
+        </div>
+    </div>
 
-  <!-- Custom JavaScript -->
-  <script src="../resources/scripts/team.js"></script>
-</body></html>
+    <!-- Popup Form untuk Create Team -->
+    <div id="create-team-popup" class="popup-overlay">
+        <div class="popup">
+            <button class="close" id="close-create-team">&times;</button>
+            <h2>Create Team</h2>
+            <form id="create-team-form">
+                <input type="text" id="team-name" placeholder="Team Name" required>
+                <button type="submit">Create</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Popup Form untuk Join Team -->
+    <div id="join-team-popup" class="popup-overlay">
+        <div class="popup">
+            <button class="close" id="close-join-team">&times;</button>
+            <h2>Join Team</h2>
+            <form id="join-team-form">
+                <input type="text" id="team-code" placeholder="Team Code" required>
+                <button type="submit">Join</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <!-- Calendar Initialization -->
+    <script src="../resources/scripts/team.js"></script>
+    <script src="../resources/scripts/sidebar.js"></script>
+</body>
+
+</html>
