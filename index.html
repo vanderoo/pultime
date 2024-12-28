@@ -103,16 +103,55 @@
         </div>
     </div>
 
-    <div class="popup-overlay" id="show-task-popup">
+    <div class="popup-overlay-task" id="show-task-popup">
         <div class="popup">
             <button class="close" id="close-show-task-popup">&times;</button>
             <h2>Detail Tugas</h2>
             <form id="show-task-form">
-                <input type="text" id="show-task-name" placeholder="Nama Tugas" disabled>
-                <textarea id="show-task-desc" placeholder="Deskripsi" rows="3" disabled></textarea>
-                <label for="show-task-date">Deadline:</label>
-                <input type="datetime-local" id="show-task-date" disabled>
-                <button type="button" id="edit-task" style="display: none;">Edit</button>
+                <div class="form-group">
+                    <label for="show-task-name">Nama Tugas</label>
+                    <input type="text" id="show-task-name" placeholder="Nama Tugas" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="show-task-desc">Deskripsi</label>
+                    <textarea id="show-task-desc" placeholder="Deskripsi" rows="4" disabled></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="show-task-date">Deadline</label>
+                    <input type="datetime-local" id="show-task-date" disabled>
+                </div>
+                <div class="action-buttons">
+                    <button type="button" id="edit-task" class="btn btn-edit" style="display: none;">Ubah</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup-overlay-task" id="show-updatable-task-popup">
+        <div class="popup">
+            <button class="close" id="close-show-updatable-task-popup">&times;</button>
+            <h2>Detail Tugas</h2>
+            <form id="show-updatable-task-form">
+                <div class="form-group">
+                    <label for="show-updatable-task-name">Nama Tugas</label>
+                    <input type="text" id="show-updatable-task-name" placeholder="Nama Tugas" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="show-updatable-task-desc">Deskripsi</label>
+                    <textarea id="show-updatable-task-desc" placeholder="Deskripsi" rows="4" disabled></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="show-updatable-task-date">Deadline</label>
+                    <input type="datetime-local" id="show-updatable-task-date" disabled>
+                </div>
+                <div class="action-buttons">
+                    <button type="button" id="edit-updatable-task" class="btn btn-edit">Ubah</button>
+                    <div id="update-actions" style="display: none;">
+                        <button type="button" id="save-updatable-task" class="btn btn-save">Simpan</button>
+                        <button type="button" id="cancel-updatable-task" class="btn btn-cancel">Batal</button>
+                    </div>
+                    <button type="button" id="delete-updatable-task" class="btn btn-delete">Hapus</button>
+                </div>
             </form>
         </div>
     </div>

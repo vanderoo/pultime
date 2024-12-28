@@ -8,6 +8,26 @@ document.addEventListener('DOMContentLoaded', () => {
   setupPopupHandlers();
   handleTaskFormSubmission(classId);
   handleLeaveClass();
+  document.getElementById('edit-updatable-task').addEventListener('click', handleEditTask);
+  document.getElementById('save-updatable-task').addEventListener('click', handleSaveTask);
+  document.getElementById('cancel-updatable-task').addEventListener('click', handleCancelEditTask);
+  document.getElementById('delete-updatable-task').addEventListener('click', handleDeleteTask);
+  document.getElementById("copy-icon").addEventListener("click", function () {
+    const classCode = document.getElementById("class_code").innerText;
+    navigator.clipboard.writeText(classCode)
+      .then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Copied!',
+          text: 'Class code copied to clipboard!',
+          timer: 1000,
+          showConfirmButton: false,
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  });
 });
 
 async function fetchTasksByContext(context, contextId) {
@@ -55,34 +75,190 @@ function mapTasksToEvents(tasks) {
       description: task.description,
       context: task.context,
       assignee: task.assignee,
+      userId: task.user_id,
+      courseId: task.course_id,
       createdAt: task.created_at,
       updatedAt: task.updated_at,
     },
   }));
 }
 
+const showUpdatableTaskPopup = document.getElementById("show-updatable-task-popup");
+const closeShowUpdatableTaskPopup = document.getElementById("close-show-updatable-task-popup");
+const showUpdatableTaskName = document.getElementById("show-updatable-task-name");
+const showUpdatableTaskDesc = document.getElementById("show-updatable-task-desc");
+const showUpdatableTaskDate = document.getElementById("show-updatable-task-date");
+const showUpdatableTaskCourse = document.getElementById("show-updatable-task-course");
+
 // Fungsi untuk inisialisasi kalender
 async function initializeCalendar(classId) {
   const calendarEl = document.getElementById('calendar');
-
-  // Ambil task dari API
   const tasks = await fetchTasksByContext("class", classId);
-
-  // Peta task ke event FullCalendar
   const events = mapTasksToEvents(tasks);
 
-  // Inisialisasi FullCalendar dengan event
+  closeShowUpdatableTaskPopup.addEventListener("click", hideUpdatableTaskDetails);
+
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     events: events,
     eventClick: (info) => {
-      // Logika saat event diklik
-      console.log('Detail Event:', info.event.extendedProps);
-      alert(`Nama: ${info.event.title}\nDeskripsi: ${info.event.extendedProps.description}\nDeadline: ${info.event.start}`);
+      showTaskDetails(info.event);
+      console.log(info.event);
     },
   });
 
   calendar.render();
+}
+
+// Fungsi untuk menampilkan popup detail tugas
+function showTaskDetails(event) {
+  // Tampilkan popup updatable task
+  showUpdatableTaskName.value = event.title;
+  showUpdatableTaskDesc.value = event.extendedProps.description || "";
+  showUpdatableTaskDate.value = event.start
+    ? new Date(event.start).toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace(' ', 'T')
+    : "";
+
+  // Set atribut taskId di elemen showUpdatableTaskName
+  showUpdatableTaskName.setAttribute('taskId', event.id);
+  showUpdatableTaskCourse.value = event.extendedProps.courseId;
+
+  showUpdatableTaskPopup.style.display = "flex"; // Tampilkan popup updatable task
+}
+
+// Fungsi untuk menyembunyikan popup updatable task
+function hideUpdatableTaskDetails() {
+  showUpdatableTaskPopup.style.display = "none"; // Sembunyikan popup updatable task
+  handleCancelEditTask();
+}
+
+function handleEditTask() {
+  // Mengaktifkan input di form
+  showUpdatableTaskName.disabled = false;
+  showUpdatableTaskDesc.disabled = false;
+  showUpdatableTaskDate.disabled = false;
+  showUpdatableTaskCourse.disabled = false;
+
+  // Menyembunyikan tombol "Ubah" dan menampilkan tombol aksi baru
+  document.getElementById('edit-updatable-task').style.display = 'none';
+  document.getElementById('update-actions').style.display = 'block';
+}
+
+// Fungsi untuk menangani klik pada tombol Simpan (submit form ke API)
+function handleSaveTask() {
+  // Ambil data dari form
+  const taskId = showUpdatableTaskName.getAttribute('taskId');
+  const updatedTask = {
+    name: showUpdatableTaskName.value,
+    description: showUpdatableTaskDesc.value,
+    start_date: showUpdatableTaskDate.value,
+    context: "class",
+    course_id: showUpdatableTaskCourse.value,
+  };
+
+  // Kirim data ke API (gunakan fetch untuk melakukan POST atau PUT request)
+  fetch(`http://localhost:3000/task/${taskId}`, {
+    method: 'PUT', // Menggunakan PUT untuk update task
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+    },
+    body: JSON.stringify(updatedTask),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.code === 200) {
+        Swal.fire({
+          title: 'Tugas Diperbarui!',
+          text: 'Tugas berhasil diperbarui.',
+          icon: 'success',
+        }).then(() => {
+          // Tindakan setelah sukses, seperti menutup popup atau memuat ulang halaman
+          hideUpdatableTaskDetails();
+          handleCancelEditTask();
+          initializeCalendar(classId);
+        });
+      } else {
+        console.log(data);
+        Swal.fire({
+          title: 'Gagal Memperbarui',
+          text: data.errors[0].message,
+          icon: 'error',
+        });
+      }
+    });
+}
+
+function handleCancelEditTask() {
+  // Menonaktifkan kembali input di form
+  showUpdatableTaskName.disabled = true;
+  showUpdatableTaskDesc.disabled = true;
+  showUpdatableTaskDate.disabled = true;
+  showUpdatableTaskCourse.disabled = true;
+
+  // Menyembunyikan tombol aksi baru dan menampilkan tombol "Ubah"
+  document.getElementById('edit-updatable-task').style.display = 'inline-block';
+  document.getElementById('update-actions').style.display = 'none';
+}
+
+// Fungsi untuk menangani aksi penghapusan task
+function handleDeleteTask() {
+  const accessToken = localStorage.getItem('accessToken'); // Ambil token dari localStorage
+  const taskId = showUpdatableTaskName.getAttribute('taskId');
+
+  // Menampilkan konfirmasi menggunakan SweetAlert
+  Swal.fire({
+    title: 'Apakah Anda yakin?',
+    text: "Tugas ini akan dihapus secara permanen!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, Hapus',
+    cancelButtonText: 'Batal',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Jika pengguna mengonfirmasi penghapusan, kirimkan request ke API dengan token akses
+      fetch(`http://localhost:3000/task/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      })
+        .then(response => response.json())  // Mengambil body response dalam bentuk JSON
+        .then(data => {
+          console.log(data);
+          if (data.errors && data.errors.length > 0) {
+            // Jika ada error dalam response body, tampilkan pesan error
+            Swal.fire({
+              title: 'Gagal Menghapus',
+              text: data.errors[0].message, // Menampilkan pesan error pertama
+              icon: 'error',
+            }).then(() => {
+              // Tindakan setelah sukses, seperti menutup popup atau memuat ulang halaman
+              hideUpdatableTaskDetails(); // Menyembunyikan popup setelah penghapusan
+            });
+          } else {
+            // Jika tidak ada error, anggap penghapusan berhasil
+            Swal.fire({
+              title: 'Tugas Terhapus!',
+              text: 'Tugas berhasil dihapus.',
+              icon: 'success',
+            }).then(() => {
+              // Tindakan setelah sukses, seperti menutup popup atau memuat ulang halaman
+              hideUpdatableTaskDetails(); // Menyembunyikan popup setelah penghapusan
+              initializeCalendar(classId);
+            });
+          }
+        })
+        .catch(error => {
+          // Menangani kesalahan jaringan atau server
+          Swal.fire({
+            title: 'Error',
+            text: 'Terjadi kesalahan jaringan.',
+            icon: 'error',
+          });
+        });
+    }
+  });
 }
 
 // Fungsi untuk menangani tombol popup
@@ -291,6 +467,7 @@ function updateClassData(classId) {
           option.value = course.id; // Menyimpan ID kursus sebagai nilai option
           option.textContent = course.course_name; // Menampilkan nama kursus sebagai teks option
           courseSelect.appendChild(option);
+          showUpdatableTaskCourse.appendChild(option);
         });
       } else {
         classNameElement.textContent = 'Class not found';

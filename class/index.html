@@ -84,10 +84,15 @@
         <!-- Sidebar Kanan -->
         <div class="side-content">
             <h4>PULTIME</h4>
-            <div class="class-info">
+            <div class="class-info styled-info">
                 <h5 id="class_name">...</h5>
-                <h5 id="class_code">...</h5>
-            </div>
+                <div class="class-code-wrapper">
+                    <h5 id="class_code">...</h5>
+                    <div class="copy-icon-wrapper">
+                        <img id="copy-icon" src="../resources/icon/copy_icon.svg" alt="Copy" title="Copy to clipboard" width="16px" height="16px" style="cursor: pointer;">
+                    </div>
+                </div>
+            </div>            
             <div class="menu">
                 <div class="item">
                     <img src="../resources/images/kelas.svg" alt="" height="20px" width="20px">
@@ -129,6 +134,42 @@
                     <option value="" disabled selected>Pilih Kursus</option>
                 </select>
                 <button type="submit">Add</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup-overlay-task" id="show-updatable-task-popup">
+        <div class="popup">
+            <button class="close" id="close-show-updatable-task-popup">&times;</button>
+            <h2>Detail Tugas</h2>
+            <form id="show-updatable-task-form">
+                <div class="form-group">
+                    <label for="show-updatable-task-course">Kursus</label>
+                    <select id="show-updatable-task-course" disabled>
+                        <option value="" disabled selected>Pilih Kursus</option>
+                        <!-- Opsi kursus akan dimuat melalui JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="show-updatable-task-name">Nama Tugas</label>
+                    <input type="text" id="show-updatable-task-name" placeholder="Nama Tugas" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="show-updatable-task-desc">Deskripsi</label>
+                    <textarea id="show-updatable-task-desc" placeholder="Deskripsi" rows="4" disabled></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="show-updatable-task-date">Deadline</label>
+                    <input type="datetime-local" id="show-updatable-task-date" disabled>
+                </div>                
+                <div class="action-buttons">
+                    <button type="button" id="edit-updatable-task" class="btn btn-edit">Ubah</button>
+                    <div id="update-actions" style="display: none;">
+                        <button type="button" id="save-updatable-task" class="btn btn-save">Simpan</button>
+                        <button type="button" id="cancel-updatable-task" class="btn btn-cancel">Batal</button>
+                    </div>
+                    <button type="button" id="delete-updatable-task" class="btn btn-delete">Hapus</button>
+                </div>
             </form>
         </div>
     </div>
