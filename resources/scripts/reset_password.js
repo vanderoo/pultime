@@ -1,17 +1,38 @@
-// Fungsi untuk mengambil token dari URL
 function getTokenFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('token');  // Ambil token dari parameter URL
+  return urlParams.get('token');
 }
 
-// Fungsi untuk mengirimkan request ke API reset password
 async function resetPassword() {
   const token = getTokenFromUrl();
-  const newPassword = document.getElementById('newPassword').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  const newPassword = document.getElementById('newPassword').value.trim();
+  const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
   if (!token) {
-    alert('Token not found in the URL');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: 'Token tidak ditemukan di URL. Harap periksa kembali link reset password Anda.',
+    });
+    return;
+  }
+
+  if (!newPassword || !confirmPassword) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Field Kosong!',
+      text: 'Password dan konfirmasi password harus diisi!',
+    });
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Password Tidak Cocok!',
+      text: 'Password baru dan konfirmasi password harus sama!',
+    });
     return;
   }
 
@@ -30,16 +51,42 @@ async function resetPassword() {
     });
 
     if (response.ok) {
-      alert('Password reset successfully');
-      window.location.href = '/login';  // Redirect ke halaman login setelah berhasil reset
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Password Anda berhasil direset. Silakan login menggunakan password baru Anda.',
+      }).then(() => {
+        window.location.href = '/login';
+      });
     } else {
       const errorData = await response.json();
-      alert(errorData.errors[0].message || 'Failed to reset password');
+      const errorMessage = errorData.errors?.[0]?.message ||'Gagal mereset password. Silakan coba lagi.';
+
+      if (errorMessage.toLowerCase().includes('token not found')) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Token Sudah Digunakan!',
+          text: 'Token reset password Anda sudah digunakan atau tidak valid. Harap buat permintaan reset password baru.',
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal!',
+          text: errorMessage,
+        });
+      }
     }
   } catch (error) {
-    alert('An error occurred. Please try again later.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Kesalahan Jaringan!',
+      text: 'Terjadi kesalahan jaringan. Silakan coba lagi nanti.',
+    });
+    console.error('Error:', error);
   }
 }
 
-// Event listener untuk tombol reset password
-document.getElementById('resetButton').addEventListener('click', resetPassword);
+document.addEventListener('DOMContentLoaded', () => {
+  const resetButton = document.getElementById('resetButton');
+  resetButton.addEventListener('click', resetPassword);
+});

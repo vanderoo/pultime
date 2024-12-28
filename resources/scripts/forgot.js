@@ -1,21 +1,24 @@
-document.querySelector(".button").addEventListener("click", async function(event) {
-    event.preventDefault();  // Mencegah pengiriman form secara default
-    console.log("click")
-    // Ambil nilai email dari input form
-    const email = document.querySelector('input[type="email"]').value;
-  
-    // Validasi email (opsional, bisa ditambahkan pengecekan format email)
+document.addEventListener('DOMContentLoaded', () => {
+  const sendEmailButton = document.getElementById('sendEmailButton');
+  const emailInput = document.getElementById('emailInput');
+
+  sendEmailButton.addEventListener('click', async (event) => {
+    event.preventDefault();
+
+    const email = emailInput.value.trim();
+
     if (!email) {
-      alert("Email harus diisi!");
+      Swal.fire({
+        icon: 'error',
+        title: 'Field kosong!',
+        text: 'Email harus diisi!',
+      });
       return;
     }
-  
-    const requestBody = {
-      email: email,
-    };
-  
+
+    const requestBody = { email };
+
     try {
-      // Kirim request ke API
       const response = await fetch("http://localhost:3000/auth/request-reset-password", {
         method: "POST",
         headers: {
@@ -23,21 +26,29 @@ document.querySelector(".button").addEventListener("click", async function(event
         },
         body: JSON.stringify(requestBody),
       });
-  
-      // Tangani response dari server
+
       if (response.ok) {
-        // Jika berhasil, beri notifikasi ke user
-        alert("Email reset password telah dikirim. Silakan cek inbox Anda.");
-        // Reset input field
-        document.querySelector('input[type="email"]').value = "";
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Email reset password telah dikirim. Silakan cek inbox Anda.',
+        });
+        emailInput.value = "";
       } else {
-        // Jika gagal, tampilkan error
         const errorData = await response.json();
-        alert(errorData.errors[0].message || "Terjadi kesalahan saat mengirim email.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal!',
+          text: errorData.errors?.[0]?.message || 'Terjadi kesalahan saat mengirim email.',
+        });
       }
     } catch (error) {
-      // Tangani jika ada masalah saat mengirim request
-      alert("Terjadi kesalahan jaringan. Coba lagi nanti.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Kesalahan Jaringan!',
+        text: 'Terjadi kesalahan jaringan. Coba lagi nanti.',
+      });
+      console.error('Error:', error);
     }
   });
-  
+});
