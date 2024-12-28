@@ -35,7 +35,11 @@ async function fetchTasksByContext(context, contextId) {
     return tasks.data;
   } catch (error) {
     console.error('Error fetching tasks:', error);
-    alert('Gagal mengambil data task. Silakan coba lagi.');
+    Swal.fire({
+      title: 'Gagal Mengambil Data',
+      text: 'Terjadi kesalahan saat mengambil data tugas. Silakan coba lagi.',
+      icon: 'error',
+    });
     return [];
   }
 }
@@ -107,22 +111,40 @@ function handleTaskFormSubmission(classId) {
     const accessToken = getAccessToken();
 
     if (!accessToken) {
-      alert('Access token tidak ditemukan! Harap login ulang.');
+      Swal.fire({
+        title: 'Akses Ditolak!',
+        text: 'Access token tidak ditemukan! Harap login ulang.',
+        icon: 'warning',
+        confirmButtonText: 'Login Ulang',
+      }).then(() => {
+        // Opsional: Tambahkan logika untuk redirect ke halaman login
+        window.location.href = '/login'; // Ganti dengan URL halaman login Anda
+      });
       return;
     }
 
     try {
       const result = await submitTaskData(taskData, accessToken);
       if (result.success) {
-        alert('Task berhasil ditambahkan!');
-        console.log('Task berhasil ditambahkan:', result.data);
-        initializeCalendar(classId);
+        Swal.fire({
+          title: 'Sukses!',
+          text: 'Task berhasil ditambahkan!',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        }).then(() => {
+          console.log('Task berhasil ditambahkan:', result.data);
+          initializeCalendar(classId); // Memuat ulang kalender
+        });
       } else {
         handleApiError(result.error);
       }
     } catch (error) {
       console.error('Terjadi kesalahan:', error);
-      alert('Terjadi kesalahan saat menghubungi server.');
+      Swal.fire({
+        title: 'Kesalahan!',
+        text: 'Terjadi kesalahan saat menghubungi server.',
+        icon: 'error',
+      });
     }
 
     popupOverlay.style.display = 'none';
@@ -173,8 +195,14 @@ async function submitTaskData(taskData, accessToken) {
 function handleApiError(error) {
   console.error('Error:', error);
   const errorMessage = error.errors?.[0]?.message || 'Unknown error';
-  alert(`Gagal menambahkan task: ${error.status} - ${errorMessage}`);
+  Swal.fire({
+    title: 'Gagal Menambahkan Task!',
+    text: `${error.status} - ${errorMessage}`,
+    icon: 'error',
+    confirmButtonText: 'OK',
+  });
 }
+
 
 // Fungsi untuk mendapatkan classId dari URL
 function getClassIdFromUrl() {
@@ -227,7 +255,7 @@ function updateClassData(classId) {
 
           // Memeriksa apakah ID kursus sudah ada di localStorage
           const savedCourses = getSavedCourses();
-          
+
           courseCheckbox.checked = !savedCourses.includes(course.id); // Centang sesuai data di localStorage
           // Menambahkan ID kursus sebagai atribut data
           courseCheckbox.setAttribute('data-course-id', course.id);
@@ -286,14 +314,19 @@ function saveCourses(courses) {
 
 function handleLeaveClass() {
   const leaveClassElement = document.getElementById('leave_class');
-  
+
   // Menambahkan event listener untuk menghapus user dari kelas saat elemen #leave_class diklik
   leaveClassElement.addEventListener('click', function (event) {
     event.preventDefault(); // Mencegah aksi default dari link
-    
+
     // Cek apakah userId dan classId tersedia
     if (!userId || !classId) {
-      alert('User atau class ID hilang.');
+      Swal.fire({
+        title: 'Data Tidak Lengkap!',
+        text: 'User ID atau Class ID hilang. Harap periksa kembali.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
       return;
     }
 
@@ -305,24 +338,39 @@ function handleLeaveClass() {
         'Content-Type': 'application/json',
       },
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Gagal menghapus user dari kelas.');
-      }
-      return response.json();
-    })
-    .then(result => {
-      if (result.code === 200) {
-        alert('Berhasil keluar dari kelas');
-        // Tambahkan logika untuk melakukan update tampilan atau redirect jika perlu
-        window.location.href = '/';
-      } else {
-        alert('Gagal keluar dari kelas');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Terjadi kesalahan saat menghapus user dari kelas');
-    });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Gagal menghapus user dari kelas.');
+        }
+        return response.json();
+      })
+      .then(result => {
+        if (result.code === 200) {
+          Swal.fire({
+            title: 'Berhasil!',
+            text: 'Anda berhasil keluar dari kelas.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+          }).then(() => {
+            window.location.href = '/';
+          });
+        } else {
+          Swal.fire({
+            title: 'Gagal!',
+            text: 'Gagal keluar dari kelas. Silakan coba lagi.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+          title: 'Kesalahan!',
+          text: 'Terjadi kesalahan saat menghapus user dari kelas. Silakan coba lagi.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      });
   });
 }
