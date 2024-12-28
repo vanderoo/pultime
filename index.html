@@ -103,6 +103,20 @@
         </div>
     </div>
 
+    <div class="popup-overlay" id="show-task-popup">
+        <div class="popup">
+            <button class="close" id="close-show-task-popup">&times;</button>
+            <h2>Detail Tugas</h2>
+            <form id="show-task-form">
+                <input type="text" id="show-task-name" placeholder="Nama Tugas" disabled>
+                <textarea id="show-task-desc" placeholder="Deskripsi" rows="3" disabled></textarea>
+                <label for="show-task-date">Deadline:</label>
+                <input type="datetime-local" id="show-task-date" disabled>
+                <button type="button" id="edit-task" style="display: none;">Edit</button>
+            </form>
+        </div>
+    </div>
+
     <div id="create-class-popup" class="popup-overlay">
         <div class="popup">
             <button class="close" id="close-create-class">&times;</button>
@@ -120,8 +134,6 @@
             </form>
         </div>
     </div>
-
-
 
     <!-- Popup Form untuk Join Class -->
     <div id="join-class-popup" class="popup-overlay">

@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeCalendar();
   setupPopupHandlers();
   handleTaskFormSubmission();
-
 });
 
 function getAllSavedCourses() {
@@ -15,7 +14,6 @@ function getAllSavedCourses() {
   allCourses = [...new Set(allCourses)];
   return allCourses;
 }
-
 
 async function fetchTasks() {
   try {
@@ -36,7 +34,7 @@ async function fetchTasks() {
     });
 
     if (!response.ok) {
-      throw new Error('Gagal mengambil event dari server.');
+      throw new Error('Gagal mengambil tugas dari server.');
     }
 
     const tasks = await response.json(); // Data dari API
@@ -44,22 +42,28 @@ async function fetchTasks() {
     return tasks.data;
   } catch (error) {
     console.error('Error fetching tasks:', error);
-    alert('Gagal mengambil data task. Silakan coba lagi.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal Mengambil Data',
+      text: 'Gagal mengambil data task. Silakan coba lagi.',
+    });
     return [];
   }
 }
 
 function mapTasksToEvents(tasks) {
   return tasks.map((task) => ({
-    id: task.id, // ID unik untuk setiap event
-    title: task.name, // Nama task sebagai judul event
-    start: task.start_date, // Tanggal mulai event
-    end: task.end_date || null, // Tanggal selesai event (opsional)
-    color: "red", // Warna berdasarkan progress
+    id: task.id,
+    title: task.name,
+    start: task.start_date,
+    end: task.end_date || null,
+    color: "red",
     extendedProps: {
       description: task.description,
       context: task.context,
       assignee: task.assignee,
+      userId: task.user_id,
+      courseId: task.course_id,
       createdAt: task.created_at,
       updatedAt: task.updated_at,
     },
@@ -68,27 +72,46 @@ function mapTasksToEvents(tasks) {
 
 // Fungsi untuk inisialisasi kalender
 async function initializeCalendar() {
-  const calendarEl = document.getElementById('calendar');
+  const calendarEl = document.getElementById("calendar");
+  const tasks = await fetchTasks(); // Ambil task dari API
+  const events = mapTasksToEvents(tasks); // Peta task ke event FullCalendar
 
-  // Ambil task dari API
-  const tasks = await fetchTasks();
+  // Elemen popup untuk detail tugas
+  const showTaskPopup = document.getElementById("show-task-popup");
+  const closeShowTaskPopup = document.getElementById("close-show-task-popup");
+  const showTaskName = document.getElementById("show-task-name");
+  const showTaskDesc = document.getElementById("show-task-desc");
+  const showTaskDate = document.getElementById("show-task-date");
 
-  // Peta task ke event FullCalendar
-  const events = mapTasksToEvents(tasks);
+  // Fungsi untuk menampilkan popup detail tugas
+  function showTaskDetails(event) {
+    showTaskName.value = event.title;
+    showTaskDesc.value = event.extendedProps.description || "";
+    showTaskDate.value = event.start
+      ? new Date(event.start).toISOString().slice(0, -1)
+      : "";
 
-  // Inisialisasi FullCalendar dengan event
+    showTaskPopup.style.display = "flex"; // Tampilkan popup
+  }
+
+  // Fungsi untuk menyembunyikan popup
+  function hideTaskDetails() {
+    showTaskPopup.style.display = "none"; // Sembunyikan popup
+  }
+
+  closeShowTaskPopup.addEventListener("click", hideTaskDetails);
+
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
+    initialView: "dayGridMonth",
     events: events,
     eventClick: (info) => {
-      // Logika saat event diklik
-      console.log('Detail Event:', info.event.extendedProps);
-      alert(`Nama: ${info.event.title}\nDeskripsi: ${info.event.extendedProps.description}\nDeadline: ${info.event.start}`);
+      showTaskDetails(info.event); // Panggil fungsi untuk menampilkan popup saat event diklik
     },
   });
 
   calendar.render();
 }
+
 
 // Fungsi untuk menangani tombol popup
 function setupPopupHandlers() {
@@ -116,14 +139,22 @@ function handleTaskFormSubmission() {
     const accessToken = getAccessToken();
 
     if (!accessToken) {
-      alert('Access token tidak ditemukan! Harap login ulang.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Akses Ditolak',
+        text: 'Access token tidak ditemukan! Harap login ulang.',
+      });
       return;
     }
 
     try {
       const result = await submitTaskData(taskData, accessToken);
       if (result.success) {
-        alert('Task berhasil ditambahkan!');
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Task berhasil ditambahkan!',
+        });
         console.log('Task berhasil ditambahkan:', result.data);
         initializeCalendar();
       } else {
@@ -131,7 +162,11 @@ function handleTaskFormSubmission() {
       }
     } catch (error) {
       console.error('Terjadi kesalahan:', error);
-      alert('Terjadi kesalahan saat menghubungi server.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Kesalahan',
+        text: 'Terjadi kesalahan saat menghubungi server.',
+      });
     }
 
     popupOverlay.style.display = 'none';
@@ -146,7 +181,7 @@ function getTaskFormData() {
     name: document.getElementById('task-name').value,
     description: document.getElementById('task-desc').value || "tbd",
     start_date: new Date(taskDateValue).toISOString(),
-    context: "class",
+    context: "personal",
     user_id: localStorage.getItem('userId'),
   };
 }
@@ -169,6 +204,7 @@ async function submitTaskData(taskData, accessToken) {
 
   const result = await response.json();
   if (response.ok) {
+    console.log(result);
     return { success: true, data: result.data };
   } else {
     return { success: false, error: result };
@@ -179,5 +215,10 @@ async function submitTaskData(taskData, accessToken) {
 function handleApiError(error) {
   console.error('Error:', error);
   const errorMessage = error.errors?.[0]?.message || 'Unknown error';
-  alert(`Gagal menambahkan task: ${error.status} - ${errorMessage}`);
+  Swal.fire({
+    icon: 'error',
+    title: 'Gagal Menambahkan Task',
+    text: `${error.status} - ${errorMessage}`,
+  });
 }
+
