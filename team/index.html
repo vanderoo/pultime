@@ -5,12 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team | Pultime</title>
-
     <!-- FullCalendar CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar/main.min.css" />
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../resources/styles/sidebar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../resources/styles/team.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -34,14 +33,11 @@
                         <a href="#">Class</a>
                         <img class="arrow" src="../resources/images/arrowdrop.svg" alt="" height="15px">
                     </div>
-                    <div class="dropdown-content">
-                        <a href="../class">5A</a>
-                        <a href="../class">7C</a>
-                        <a href="../class">5C</a>
+                    <div id="dropdown-content-classes" class="dropdown-content">
+
                     </div>
                 </div>
-                <img id="add-class" class="tambah" src="../resources/images/tambah.svg" alt="" height="20px"
-                    width="20px">
+                <img id="add-class" class="tambah" src="../resources/images/add.svg" alt="" height="20px" width="20px">
                 <div id="class-popup" class="popup-dropdown">
                     <div id="create-class-option" class="menu-item">Create Class</div>
                     <div id="join-class-option" class="menu-item">Join Class</div>
@@ -54,20 +50,18 @@
                         <a href="#">Team</a>
                         <img class="arrow" src="../resources/images/arrowdrop.svg" alt="" height="15px">
                     </div>
-                    <div class="dropdown-content">
-                        <a href="../team">Group A</a>
-                        <a href="../team">Group B</a>
-                        <a href="../team">Group C</a>
+                    <div id="dropdown-content-teams" class="dropdown-content">
+
                     </div>
                 </div>
-                <img id="add-team" class="tambah" src="../resources/images/tambah.svg" alt="" height="20px" width="20px">
+                <img id="add-team" class="tambah" src="../resources/images/add.svg" alt="" height="20px" width="20px">
                 <div id="team-popup" class="popup-dropdown">
                     <div id="create-team-option" class="menu-item">Create Team</div>
                     <div id="join-team-option" class="menu-item">Join Team</div>
                 </div>
             </div>
         </div>
-        <div class="logout">
+        <div id="logout-button" class="logout">
             <img src="../resources/images/logout.svg" alt="">
             <a href="#">Logout Account</a>
         </div>
@@ -75,27 +69,52 @@
 
     <!-- Kontainer Utama -->
     <div class="content-container">
-        <!-- FullCalendar di Tengah -->
         <div class="content">
-            
+            <div class="maintenance-message">
+                <div class="icon">
+                    <i class="fas fa-cogs"></i> <!-- Anda bisa menggunakan font awesome atau ikon lainnya -->
+                </div>
+                <h1>Under Maintenance</h1>
+                <p>We're working hard to improve our service. Please check back later!</p>
+            </div>
         </div>
 
         <!-- Sidebar Kanan -->
         <div class="side-content">
             <h4>PULTIME</h4>
-            <div class="class-info">
-                <h5>Team Name</h5>
+            <div class="team-info styled-info">
+                <h5 id="team_name">...</h5>
+                <div class="team-code-wrapper">
+                    <h5 id="team_code">...</h5>
+                    <div class="copy-icon-wrapper">
+                        <img id="copy-icon" src="../resources/icon/copy_icon.svg" alt="Copy" title="Copy to clipboard"
+                            width="16px" height="16px" style="cursor: pointer;">
+                    </div>
+                </div>
             </div>
             <div class="task">
                 <img src="../resources/images/task.svg" alt="" width="20px" height="20px">
                 <p>Task</p>
-                <img id="add-task" class="tambah" src="../resources/images/tambah.svg" alt="" height="20px"
-                    width="20px">
+                <img id="add-task" class="tambah" src="../resources/images/add.svg" alt="" height="20px" width="20px">
             </div>
-            <div class="leave-class">
+            <div id="leave_team" class="leave-team">
                 <img src="../resources/images/logout.svg" alt="">
                 <a href="#">Leave Team</a>
             </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="add-task-popup-overlay">
+        <div class="popup">
+            <button class="close" id="add-task-close-popup">&times;</button>
+            <h2>Tambah Tugas</h2>
+            <form id="task-form">
+                <input type="text" id="task-name" placeholder="Nama Tugas" required>
+                <textarea id="task-desc" placeholder="Deskripsi" rows="3"></textarea>
+                <label for="task-date">Deadline:</label>
+                <input type="datetime-local" id="task-date" required>
+                <button type="submit">Add</button>
+            </form>
         </div>
     </div>
 
@@ -116,7 +135,6 @@
             </form>
         </div>
     </div>
-
 
     <!-- Popup Form untuk Join Class -->
     <div id="join-class-popup" class="popup-overlay">

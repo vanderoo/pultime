@@ -1,11 +1,13 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // URL API untuk mendapatkan kelas pengguna
   const apiUrlClasses = 'http://localhost:3000/user/current/classes';
+  const apiUrlTeams = 'http://localhost:3000/user/current/teams';
   const apiUrlLogout = 'http://localhost:3000/auth/logout';
   const apiUrlUser = 'http://localhost:3000/user/current';
 
   const logoutButton = document.getElementById('logout-button');
-  const dropdownContent = document.getElementById('dropdown-content');
+  const dropdownContentClasses = document.getElementById('dropdown-content-classes');
+  const dropdownContentTeams = document.getElementById('dropdown-content-teams');
   const usernameElement = document.getElementById('current-user-username');
 
   // === Variabel untuk Dropdown dan Popup ===
@@ -40,11 +42,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Ambil data kelas pengguna
-    const classes = await fetchUserClasses(apiUrlClasses, accessToken);
-    renderClasses(classes, dropdownContent);
+    const classes = await fetchData(apiUrlClasses, accessToken);
+    const teams = await fetchData(apiUrlTeams, accessToken);
+    const userData = await fetchData(apiUrlUser, accessToken);
 
-    // Ambil data pengguna dan tampilkan username
-    const userData = await fetchUserData(apiUrlUser, accessToken);
+    // Tampilkan Data Pengguna
+    renderItems(classes, dropdownContentClasses, 'class');
+    renderItems(teams, dropdownContentTeams, 'team');
     renderUserData(userData, usernameElement);
 
     // Inisialisasi dropdown toggle setelah kelas dimuat
@@ -77,8 +81,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     joinClassForm.addEventListener('submit', (e) => handleJoinClass(e, joinClassPopup, joinClassForm));
 
     // === Event: Submit Form Tim ===
-    createTeamForm.addEventListener('submit', (e) => handleCreateTeam(e, createTeamPopup));
-    joinTeamForm.addEventListener('submit', (e) => handleJoinTeam(e, joinTeamPopup));
+    createTeamForm.addEventListener('submit', (e) => handleCreateTeam(e, createTeamPopup, createTeamForm));
+    joinTeamForm.addEventListener('submit', (e) => handleJoinTeam(e, joinTeamPopup, joinTeamForm));
 
     // === Event: Dinamis Course ===
     handleDynamicCourses();
@@ -114,12 +118,12 @@ function redirectToLogin() {
 }
 
 /**
- * Memanggil API untuk mendapatkan data kelas pengguna
+ * Memanggil API untuk mendapatkan data (kelas atau tim)
  * @param {string} apiUrl URL API
  * @param {string} accessToken Token otentikasi
- * @returns {Promise<Array>} Promise yang menghasilkan daftar kelas
+ * @returns {Promise<Array>} Promise yang menghasilkan daftar data
  */
-async function fetchUserClasses(apiUrl, accessToken) {
+async function fetchData(apiUrl, accessToken) {
   const response = await fetch(apiUrl, {
     method: 'GET',
     headers: {
@@ -129,7 +133,7 @@ async function fetchUserClasses(apiUrl, accessToken) {
   });
 
   if (!response.ok) {
-    throw new Error('Gagal mengambil data kelas.');
+    throw new Error('Gagal mengambil data.');
   }
 
   const data = await response.json();
@@ -138,53 +142,29 @@ async function fetchUserClasses(apiUrl, accessToken) {
     throw new Error('Respons API tidak valid.');
   }
 
-  return data.data; // Kembalikan data kelas
-}
-
-/**
- * Memanggil API untuk mendapatkan data pengguna
- * @param {string} apiUrl URL API
- * @param {string} accessToken Token otentikasi
- * @returns {Promise<Object>} Promise yang menghasilkan data pengguna
- */
-async function fetchUserData(apiUrl, accessToken) {
-  const response = await fetch(apiUrl, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Gagal mengambil data pengguna.');
-  }
-
-  const data = await response.json();
-  if (data.code !== 200) {
-    throw new Error('Respons API tidak valid.');
-  }
+  console.log(data);
 
   return data.data;
 }
 
 /**
- * Menampilkan daftar kelas atau pesan default jika tidak ada kelas
- * @param {Array} classes Daftar kelas pengguna
+ * Menampilkan daftar data (kelas atau tim) atau pesan default jika tidak ada data
+ * @param {Array} items Daftar data (kelas atau tim)
  * @param {HTMLElement} container Elemen container untuk dropdown content
+ * @param {string} type Jenis data (class atau team)
  */
-function renderClasses(classes, container) {
-  if (classes.length === 0) {
-    container.innerHTML = '<p>No classes available. Please create or join a class.</p>';
+function renderItems(items, container, type) {
+  if (items.length === 0) {
+    container.innerHTML = `<p>No ${type}s available.</p>`;
   } else {
     container.innerHTML = ''; // Kosongkan konten sebelumnya
-    classes.forEach((classItem) => {
-      const classLink = document.createElement('a');
-      classLink.href = `http://localhost:5500/class#${classItem.id}`;
-      classLink.setAttribute('data-class-id', classItem.id);
-      classLink.classList.add('class-link');
-      classLink.textContent = classItem.class_name;
-      container.appendChild(classLink);
+    items.forEach((item) => {
+      const itemLink = document.createElement('a');
+      itemLink.href = `http://localhost:5500/${type}#${item.id}`;
+      itemLink.setAttribute(`data-${type}-id`, item.id);
+      itemLink.classList.add(`${type}-link`);
+      itemLink.textContent = item[`${type}_name`]; // Sesuaikan dengan nama field
+      container.appendChild(itemLink);
     });
   }
 }
@@ -249,7 +229,10 @@ function handleLogout(e, apiUrlLogout) {
   // Panggil API Logout
   fetch(apiUrlLogout, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${getAccessToken()}` // Tambahkan accessToken
+    },
     body: JSON.stringify(requestData),
   })
     .then((response) => response.ok ? handleLogoutSuccess() : handleLogoutFailure(response))
@@ -282,11 +265,11 @@ function handleLogoutSuccess() {
  */
 function handleLogoutFailure(response) {
   response.json().then((data) => {
-    const errorMessage = data.message || 'Terjadi kesalahan saat logout.';
+    const errorMessage = data.errors[0].message || 'Terjadi kesalahan saat logout.';
     Swal.fire({
       icon: 'error',
       title: 'Logout Gagal',
-      text: `Logout gagal: ${errorMessage}`,
+      text: errorMessage,
     });
   });
 }
@@ -372,7 +355,7 @@ function handleCreateClass(e, createClassPopup, createClassForm) {
           createClassPopup.style.display = 'none'; // Tutup popup setelah berhasil
           createClassForm.reset(); // Reset form setelah berhasil
           window.location.href = '/';
-        });        
+        });
       } else {
         Swal.fire({
           icon: 'error',
@@ -405,7 +388,7 @@ function handleJoinClass(e, joinClassPopup, joinClassForm) {
     });
     return;
   }
-  
+
   // Ambil access token dan user_id dari localStorage
   const accessToken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId'); // Ambil user_id dari localStorage
@@ -460,7 +443,7 @@ function handleJoinClass(e, joinClassPopup, joinClassForm) {
           icon: 'error',
           title: 'Gagal Bergabung dengan Kelas',
           text: data.errors[0].message,
-        });        
+        });
       }
     })
     .catch(error => {
@@ -469,25 +452,162 @@ function handleJoinClass(e, joinClassPopup, joinClassForm) {
         icon: 'error',
         title: 'Gagal Bergabung dengan Kelas',
         text: 'Terjadi kesalahan saat bergabung dengan kelas. Silakan coba lagi nanti.',
-      });      
+      });
     });
 }
 
 // === Fungsi Submit Form Tim ===
 function handleCreateTeam(e, createTeamPopup, createTeamForm) {
-  e.preventDefault();
+  e.preventDefault(); // Mencegah submit form secara default
+
   const teamName = document.getElementById('team-name').value;
-  console.log('Creating Team:', teamName);
-  createTeamPopup.style.display = 'none';
-  createTeamForm.reset();
+
+  // Validasi form
+  if (!teamName.trim()) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Form Tidak Lengkap',
+      text: 'Team name diperlukan.',
+    });
+    return;
+  }
+
+  const requestData = {
+    team_name: teamName,
+  };
+
+  // Ambil access token dari localStorage
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Tidak Terautentikasi',
+      text: 'Anda tidak terautentikasi. Silakan login terlebih dahulu.',
+    });
+    return;
+  }
+
+  // Kirim data ke API
+  fetch('http://localhost:3000/team', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`, // Sertakan accessToken di header
+    },
+    body: JSON.stringify(requestData),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.code === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Tim Berhasil Dibuat',
+          text: 'Tim telah berhasil dibuat!',
+        }).then(() => {
+          console.log('Created team:', data.data);
+          createTeamPopup.style.display = 'none'; // Tutup popup setelah berhasil
+          createTeamForm.reset(); // Reset form setelah berhasil
+          window.location.href = '/'; // Redirect atau reload halaman
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Membuat Tim',
+          text: 'Gagal membuat tim. Coba lagi nanti.',
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Terjadi Kesalahan',
+        text: 'Terjadi kesalahan saat membuat tim. Silakan coba lagi nanti.',
+      });
+    });
 }
 
 function handleJoinTeam(e, joinTeamPopup, joinTeamForm) {
   e.preventDefault();
+
   const teamCode = document.getElementById('team-code').value;
-  console.log('Joining Team with Code:', teamCode);
-  joinTeamPopup.style.display = 'none';
-  joinTeamForm.reset();
+
+  // Validasi form
+  if (!teamCode) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Kode Tim Diperlukan',
+      text: 'Kode tim harus diisi untuk melanjutkan.',
+    });
+    return;
+  }
+
+  // Ambil access token dan user_id dari localStorage
+  const accessToken = localStorage.getItem('accessToken');
+  const userId = localStorage.getItem('userId'); // Ambil user_id dari localStorage
+
+  if (!accessToken) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Tidak Terautentikasi',
+      text: 'Anda belum login. Silakan login terlebih dahulu.',
+    });
+    return;
+  }
+
+  if (!userId) {
+    Swal.fire({
+      icon: 'error',
+      title: 'ID Pengguna Hilang',
+      text: 'ID pengguna tidak ditemukan. Silakan login kembali.',
+    });
+    return;
+  }
+
+  // Membuat request body dengan user_id
+  const requestBody = {
+    user_id: userId
+  };
+
+  // Kirim request untuk bergabung dengan tim
+  fetch(`http://localhost:3000/team/${teamCode}/users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`, // Sertakan accessToken di header
+    },
+    body: JSON.stringify(requestBody), // Menambahkan user_id dalam body request
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.code === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Bergabung dengan Tim Sukses',
+          text: 'Anda berhasil bergabung dengan tim!',
+        }).then(() => {
+          console.log('User data:', data.data); // Menampilkan data pengguna yang berhasil bergabung
+          joinTeamPopup.style.display = 'none'; // Menutup popup setelah berhasil bergabung
+          joinTeamForm.reset(); // Reset form setelah berhasil
+          window.location.href = '/'; // Redirect atau reload halaman
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Bergabung dengan Tim',
+          text: data.errors[0]?.message || 'Terjadi kesalahan. Silakan coba lagi.',
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Bergabung dengan Tim',
+        text: 'Terjadi kesalahan saat bergabung dengan tim. Silakan coba lagi nanti.',
+      });
+    });
 }
 
 // Fungsi: Tambah Input Course Baru

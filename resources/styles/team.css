@@ -8,9 +8,10 @@ body {
 }
 
 .content-container {
-  flex: 1;
   display: flex;
   flex-direction: row;
+  height: 100vh;
+  flex: 1;
 }
 
 .content {
@@ -18,25 +19,46 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
-.calendar-container {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 0px;
+/** ===================================== */
+/** ===================================== */
+/** Under Maintenance Message */
+.maintenance-message {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
   width: 100%;
-  height: 100%;
 }
 
-#calendar {
-  max-width: 100%;
-  height: 100%;
+.maintenance-message .icon {
+  font-size: 50px;
+  color: #ff9800;
+  margin-bottom: 20px;
+  animation: spin 2s infinite linear;
 }
 
-.fc .fc-toolbar.fc-header-toolbar {
-  padding: 20px 10px 0px 10px;
+.maintenance-message h1 {
+  font-size: 36px;
+  color: #333;
+  margin-bottom: 15px;
 }
+
+.maintenance-message p {
+  font-size: 18px;
+  color: #666;
+  margin-top: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/** ===================================== */
+/** ===================================== */
 
 .side-content {
   display: flex;
@@ -71,7 +93,7 @@ body {
   display: flex;
 }
 
-.leave-class {
+.leave-team {
   display: flex;
   align-items: center;
   margin-top: auto;
@@ -79,12 +101,44 @@ body {
   max-width: 141px;
 }
 
-.leave-class:hover {
+.leave-team:hover {
   cursor: pointer;
 }
 
-.leave-class a {
+.leave-team a {
   text-decoration: none;
   color: #D55F5A;
   margin: 0;
+}
+
+.styled-info {
+  background: linear-gradient(135deg, #2c3e50, #34495e); /* Gradasi biru gelap */
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #ecf0f1; /* Teks warna abu terang */
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.styled-info h5 {
+  margin: 5px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.team-code-wrapper {
+  display: flex; /* Atur elemen dalam satu baris */
+  align-items: center; /* Vertikal sejajar */
+  justify-content: center; /* Pusatkan elemen secara horizontal */
+  gap: 10px; /* Jarak antara teks dan ikon */
+}
+
+.copy-icon-wrapper img {
+  transition: transform 0.2s ease; /* Tambahkan efek hover */
+}
+
+.copy-icon-wrapper img:hover {
+  transform: scale(1.2); /* Membesar saat hover */
 }
