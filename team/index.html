@@ -70,12 +70,28 @@
     <!-- Kontainer Utama -->
     <div class="content-container">
         <div class="content">
-            <div class="maintenance-message">
+            <div style="display: none;" class="maintenance-message">
                 <div class="icon">
                     <i class="fas fa-cogs"></i> <!-- Anda bisa menggunakan font awesome atau ikon lainnya -->
                 </div>
                 <h1>Under Maintenance</h1>
                 <p>We're working hard to improve our service. Please check back later!</p>
+            </div>
+            <div class="board">
+                <div class="column" id="todo-column">
+                    <h3>Todo</h3>
+                    <div class="task-list"></div>
+                </div>
+
+                <div class="column" id="doing-column">
+                    <h3>Doing</h3>
+                    <div class="task-list"></div>
+                </div>
+
+                <div class="column" id="done-column">
+                    <h3>Done</h3>
+                    <div class="task-list"></div>
+                </div>
             </div>
         </div>
 
@@ -113,7 +129,55 @@
                 <textarea id="task-desc" placeholder="Deskripsi" rows="3"></textarea>
                 <label for="task-date">Deadline:</label>
                 <input type="datetime-local" id="task-date" required>
+                <label for="task-assignee">Assignee:</label>
+                <select id="task-assignee" required>
+                    <option value="" disabled selected>Pilih Assignee</option>
+                </select>
+                <label for="task-progress">Progress:</label>
+                <select id="task-progress" required>
+                    <option value="" disabled selected>Pilih Progress</option>
+                    <option value="not_started">Todo</option>
+                    <option value="in_progress">Doing</option>
+                    <option value="completed">Done</option>
+                </select>
                 <button type="submit">Add</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup-overlay-task" id="show-updatable-task-popup">
+        <div class="popup">
+            <button class="close" id="close-show-updatable-task-popup">&times;</button>
+            <h2>Detail Tugas</h2>
+            <form id="show-updatable-task-form">
+                <input type="text" id="show-updatable-task-name" placeholder="Nama Tugas" required disabled>
+                <textarea id="show-updatable-task-desc" placeholder="Deskripsi" rows="3" disabled></textarea>
+
+                <label for="show-updatable-task-date">Deadline:</label>
+                <input type="datetime-local" id="show-updatable-task-date" required disabled>
+
+                <label for="show-updatable-task-assignee">Assignee:</label>
+                <select id="show-updatable-task-assignee" required disabled>
+                    <option value="" disabled selected>Pilih Assignee</option>
+                    <!-- Opsi assignee akan dimuat melalui JavaScript -->
+                </select>
+
+                <label for="show-updatable-task-progress">Progress:</label>
+                <select id="show-updatable-task-progress" required disabled>
+                    <option value="" disabled selected>Pilih Progress</option>
+                    <option value="not_started">Todo</option>
+                    <option value="in_progress">Doing</option>
+                    <option value="completed">Done</option>
+                </select>
+
+                <div class="action-buttons">
+                    <button type="button" id="edit-updatable-task" class="btn btn-edit">Ubah</button>
+                    <div id="update-actions" style="display: none;">
+                        <button type="button" id="save-updatable-task" class="btn btn-save">Simpan</button>
+                        <button type="button" id="cancel-updatable-task" class="btn btn-cancel">Batal</button>
+                    </div>
+                    <button type="button" id="delete-updatable-task" class="btn btn-delete">Hapus</button>
+                </div>
             </form>
         </div>
     </div>
@@ -175,6 +239,7 @@
     <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <!-- Calendar Initialization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="../resources/scripts/team.js"></script>
     <script src="../resources/scripts/sidebar.js"></script>
 </body>
