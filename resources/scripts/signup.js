@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
   
-      const apiUrl = 'http://localhost:3000/auth/signup';
+      const apiUrl = 'http://52.187.181.85:3000/auth/signup';
       const requestData = { email, username, password, confirm_password: confirmPassword };
   
       fetch(apiUrl, {
