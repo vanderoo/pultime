@@ -94,6 +94,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+const fetchRefreshToken = async (refreshToken) => {
+  try {
+    const response = await fetch('https://pultime.api.deroo.tech/auth/refresh-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to refresh token');
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    throw error;
+  }
+};
+
 /**
  * Mendapatkan access token dari localStorage
  * @returns {string|null} Access token atau null jika tidak ditemukan
@@ -124,28 +146,52 @@ function redirectToLogin() {
  * @returns {Promise<Array>} Promise yang menghasilkan daftar data
  */
 async function fetchData(apiUrl, accessToken) {
-  const response = await fetch(apiUrl, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-  });
+  try {
+    let response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error('Gagal mengambil data.');
+    let data = await response.json();
+    if (data.status === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+      const refreshTokenValue = localStorage.getItem('refreshToken');
+
+      if (!refreshTokenValue) {
+        throw new Error('Refresh token tidak tersedia');
+      }
+
+      const newTokens = await fetchRefreshToken(refreshTokenValue);
+
+      accessToken = newTokens.access_token;
+
+      localStorage.setItem('accessToken', accessToken);
+
+      response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+
+      data = await response.json();
+    }
+
+    if (!response.ok || data.code !== 200) {
+      throw new Error('Gagal mengambil data.');
+    }
+
+    console.log(data);
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
   }
-
-  const data = await response.json();
-
-  if (data.code !== 200) {
-    throw new Error('Respons API tidak valid.');
-  }
-
-  console.log(data);
-
-  return data.data;
 }
+
 
 /**
  * Menampilkan daftar data (kelas atau tim) atau pesan default jika tidak ada data
@@ -185,10 +231,11 @@ function renderUserData(userData, usernameElement) {
  * @param {string} defaultMessage Pesan default untuk error
  */
 function handleError(error, defaultMessage) {
+  console.log(error);
   Swal.fire({
     icon: 'error',
     title: 'Terjadi Kesalahan',
-    text: defaultMessage || 'Terjadi kesalahan yang tidak diketahui.',
+    text: defaultMessage || 'Terjadi kesalahan yang tidak diketahui. Test Kawan',
     confirmButtonText: 'OK'
   });
 }

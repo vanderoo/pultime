@@ -19,40 +19,94 @@ function getAllSavedCourses() {
   return allCourses;
 }
 
+const refreshToken = async (refreshToken) => {
+  try {
+    const response = await fetch('https://pultime.api.deroo.tech/auth/refresh-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to refresh token');
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    throw error;
+  }
+};
+
 async function fetchTasks() {
   try {
     const baseUrl = `https://pultime.api.deroo.tech/tasks/by-user`;
     const courses = getAllSavedCourses();
 
-    const accessToken = localStorage.getItem('accessToken');
+    let accessToken = localStorage.getItem('accessToken');
+    let refreshTokenValue = localStorage.getItem('refreshToken');
+
     if (!accessToken) {
+      console.error("Access token is missing");
       return [];
     }
 
     const url = new URL(baseUrl);
     url.searchParams.append('courses', JSON.stringify(courses));
 
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`, // Tambahkan token jika diperlukan
+        'Authorization': `Bearer ${accessToken}`,
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Gagal mengambil tugas dari server.');
+    const data = await response.json();
+    console.log(data.status);
+
+    if (data.status === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+      if (!refreshTokenValue) {
+        console.error("Refresh token is missing");
+        return [];
+      }
+
+      const newTokens = await refreshToken(refreshTokenValue);
+
+      accessToken = newTokens.access_token;
+
+      localStorage.setItem('accessToken', accessToken);
+
+      response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+
+      // Retry logic here
+      const retryData = await response.json();
+      if (retryData.code !== 200) {
+        throw new Error('Failed to fetch tasks after token refresh.');
+      }
+      return retryData.data;
     }
 
-    const tasks = await response.json(); // Data dari API
-    console.log(tasks.data)
-    return tasks.data;
+    if (data.code !== 200) {
+      throw new Error('Failed to fetch tasks.');
+    }
+
+    return data.data;
   } catch (error) {
     console.error('Error fetching tasks:', error);
     Swal.fire({
       icon: 'error',
-      title: 'Gagal Mengambil Data',
-      text: 'Gagal mengambil data task. Silakan coba lagi.',
+      title: 'Failed to Fetch Data',
+      text: 'Failed to fetch tasks. Please try again.',
     });
     return [];
   }

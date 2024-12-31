@@ -97,23 +97,57 @@ function updateTaskStatus(taskId, progress) {
 
 async function fetchTasksByContext(context, contextId) {
   try {
+    let accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token is missing');
+    }
+
     const apiUrl = `https://pultime.api.deroo.tech/tasks/by-context/${context}/${contextId}`;
 
-    const response = await fetch(apiUrl, {
+    let response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        'Authorization': `Bearer ${accessToken}`,
       },
     });
+
+    let tasks = await response.json();
+
+    // Jika token kedaluwarsa, coba refresh token
+    if (tasks.status === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+      const refreshTokenValue = localStorage.getItem('refreshToken');
+
+      if (!refreshTokenValue) {
+        throw new Error('Refresh token is missing');
+      }
+
+      // Refresh token dan dapatkan access token baru
+      const newTokens = await fetchRefreshToken(refreshTokenValue);
+
+      // Simpan token baru di localStorage
+      localStorage.setItem('accessToken', newTokens.access_token);
+
+      // Coba lagi dengan token yang baru
+      response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${newTokens.access_token}`,
+        },
+      });
+
+      tasks = await response.json();
+    }
 
     if (!response.ok) {
       throw new Error('Gagal mengambil event dari server.');
     }
 
-    const tasks = await response.json();
     console.log(tasks.data);
     return tasks.data;
+
   } catch (error) {
     console.error('Error fetching tasks:', error);
     Swal.fire({
@@ -127,7 +161,7 @@ async function fetchTasksByContext(context, contextId) {
 
 async function renderAssigneeOption() {
   try {
-    const accessToken = localStorage.getItem('accessToken');
+    let accessToken = localStorage.getItem('accessToken');
 
     if (!accessToken) {
       throw new Error("Access token is missing");
@@ -135,7 +169,7 @@ async function renderAssigneeOption() {
 
     const url = `https://pultime.api.deroo.tech/team/${teamId}/users`;
 
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -143,11 +177,37 @@ async function renderAssigneeOption() {
       },
     });
 
+    let data = await response.json();
+
+    // Jika token kedaluwarsa, coba refresh token
+    if (data.status === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+      const refreshTokenValue = localStorage.getItem('refreshToken');
+
+      if (!refreshTokenValue) {
+        throw new Error('Refresh token is missing');
+      }
+
+      // Refresh token dan dapatkan access token baru
+      const newTokens = await fetchRefreshToken(refreshTokenValue);
+
+      // Simpan token baru di localStorage
+      localStorage.setItem('accessToken', newTokens.access_token);
+
+      // Coba lagi dengan token yang baru
+      response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${newTokens.access_token}`,
+        },
+      });
+
+      data = await response.json(); // Dapatkan data dengan token baru
+    }
+
     if (!response.ok) {
       throw new Error("Failed to fetch users data");
     }
-
-    const data = await response.json();
 
     const assigneeSelect = document.getElementById('task-assignee');
     const assigneeDetailSelect = document.getElementById('show-updatable-task-assignee');
@@ -365,7 +425,7 @@ function renderTeamData(teamId) {
   const teamNameElement = document.getElementById('team_name'); // Elemen untuk menampilkan nama tim
 
   // Ambil accessToken dari localStorage atau sessionStorage
-  const accessToken = localStorage.getItem('accessToken'); // Sesuaikan dengan tempat Anda menyimpan token
+  let accessToken = localStorage.getItem('accessToken'); // Sesuaikan dengan tempat Anda menyimpan token
 
   // Jika tidak ada token, tampilkan pesan error
   if (!accessToken) {
@@ -385,20 +445,54 @@ function renderTeamData(teamId) {
   })
     .then((response) => response.json())
     .then((data) => {
-      if (data.code === 200) {
-        // Memperbarui nama tim dan kode tim di elemen HTML jika data berhasil diambil
-        teamNameElement.textContent = data.data.team_name;
-        teamCodeElement.textContent = data.data.team_code;
-      } else {
-        teamNameElement.textContent = 'Team not found';
-        teamCodeElement.textContent = '-';
+      // Jika token kedaluwarsa, coba refresh token
+      if (data.status === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+        const refreshTokenValue = localStorage.getItem('refreshToken');
+
+        if (!refreshTokenValue) {
+          throw new Error('Refresh token is missing');
+        }
+
+        // Refresh token dan dapatkan access token baru
+        return fetchRefreshToken(refreshTokenValue)
+          .then((newTokens) => {
+            // Simpan token baru di localStorage
+            localStorage.setItem('accessToken', newTokens.access_token);
+
+            // Coba lagi dengan token yang baru
+            return fetch(apiUrl, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${newTokens.access_token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+          })
+          .then((response) => response.json()) // Ambil data dengan token baru
+          .then((data) => processTeamData(data)); // Proses data tim
       }
+
+      processTeamData(data); // Proses data jika tidak ada masalah
     })
     .catch((error) => {
       console.error('Error fetching team data:', error);
       teamNameElement.textContent = 'Error fetching team data';
       teamCodeElement.textContent = '-';
     });
+}
+
+// Fungsi untuk memproses data tim
+function processTeamData(data) {
+  const teamCodeElement = document.getElementById('team_code');
+  const teamNameElement = document.getElementById('team_name');
+  if (data.code === 200) {
+    // Memperbarui nama tim dan kode tim di elemen HTML jika data berhasil diambil
+    teamNameElement.textContent = data.data.team_name;
+    teamCodeElement.textContent = data.data.team_code;
+  } else {
+    teamNameElement.textContent = 'Team not found';
+    teamCodeElement.textContent = '-';
+  }
 }
 
 function handleLeaveTeam() {

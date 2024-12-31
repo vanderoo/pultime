@@ -38,20 +38,54 @@ async function fetchTasksByContext(context, contextId) {
     const url = new URL(baseUrl);
     url.searchParams.append('courses', JSON.stringify(courses));
 
-    const response = await fetch(url, {
+    let accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      throw new Error('Access token tidak ditemukan.');
+    }
+
+    let response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`, // Tambahkan token jika diperlukan
+        'Authorization': `Bearer ${accessToken}`,
       },
     });
 
-    if (!response.ok) {
+    let tasks = await response.json();
+
+    // Jika token kedaluwarsa, coba refresh token
+    if (tasks.status === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+      const refreshTokenValue = localStorage.getItem('refreshToken');
+
+      if (!refreshTokenValue) {
+        throw new Error('Refresh token tidak tersedia');
+      }
+
+      // Coba refresh token
+      const newTokens = await fetchRefreshToken(refreshTokenValue);
+
+      accessToken = newTokens.access_token;
+
+      // Simpan token baru ke localStorage
+      localStorage.setItem('accessToken', accessToken);
+
+      // Coba lagi dengan token yang baru
+      response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+
+      tasks = await response.json();
+    }
+
+    if (!response.ok || tasks.code !== 200) {
       throw new Error('Gagal mengambil event dari server.');
     }
 
-    const tasks = await response.json(); // Data dari API
-    console.log(tasks.data)
+    console.log(tasks.data);
     return tasks.data;
   } catch (error) {
     console.error('Error fetching tasks:', error);
@@ -411,72 +445,115 @@ function updateClassData(classId) {
     }
   })
     .then(response => response.json())
-    .then(data => {
-      if (data.code === 200) {
-        // Memperbarui nama kelas di kontainer utama jika data berhasil diambil
-        console.log(data)
-        classNameElement.textContent = data.data.class_name;
-        classCodeElement.textContent = data.data.class_code;
+    .then(async data => {
+      if (data.status === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+        // Token kedaluwarsa, coba refresh token
+        const refreshTokenValue = localStorage.getItem('refreshToken');
 
-        // Mengosongkan konten dropdown sebelumnya
-        dropdownContent.innerHTML = '';
+        if (!refreshTokenValue) {
+          console.error('Refresh token tidak ditemukan.');
+          classNameElement.textContent = 'Error fetching class data';
+          return;
+        }
 
-        // Menambahkan kursus ke dalam dropdown-content
-        data.data.courses.forEach(course => {
-          const courseLabel = document.createElement('label');
+        try {
+          // Refresh token dan dapatkan access token baru
+          const newTokens = await fetchRefreshToken(refreshTokenValue);
 
-          // Membuat checkbox untuk setiap kursus
-          const courseCheckbox = document.createElement('input');
-          courseCheckbox.type = 'checkbox';
+          // Update access token di localStorage
+          localStorage.setItem('accessToken', newTokens.access_token);
 
-          // Memeriksa apakah ID kursus sudah ada di localStorage
-          const savedCourses = getSavedCourses();
-
-          courseCheckbox.checked = !savedCourses.includes(course.id); // Centang sesuai data di localStorage
-          // Menambahkan ID kursus sebagai atribut data
-          courseCheckbox.setAttribute('data-course-id', course.id);
-
-          // Menambahkan event listener untuk menyimpan status checkbox saat berubah
-          courseCheckbox.addEventListener('change', () => {
-            const updatedCourses = getSavedCourses(); // Ambil array kursus yang tersimpan
-            if (!courseCheckbox.checked) {
-              // Jika dicentang, tambahkan ID ke array
-              updatedCourses.push(course.id);
-            } else {
-              // Jika tidak dicentang, hapus ID dari array
-              const index = updatedCourses.indexOf(course.id);
-              if (index > -1) {
-                updatedCourses.splice(index, 1);
-              }
-            }
-            saveCourses(updatedCourses); // Simpan kembali array yang diperbarui
-            initializeCalendar(classId)
-          });
-
-          // Menambahkan nama kursus
-          const courseText = document.createTextNode(` ${course.course_name}`);
-
-          // Menambahkan checkbox dan nama kursus ke dalam label
-          courseLabel.appendChild(courseCheckbox);
-          courseLabel.appendChild(courseText);
-
-          // Menambahkan label ke dalam dropdown-content
-          dropdownContent.appendChild(courseLabel);
-
-          const option = document.createElement('option');
-          option.value = course.id; // Menyimpan ID kursus sebagai nilai option
-          option.textContent = course.course_name; // Menampilkan nama kursus sebagai teks option
-          courseSelect.appendChild(option);
-          showUpdatableTaskCourse.appendChild(option);
-        });
+          // Coba lagi dengan token yang baru
+          return fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${newTokens.access_token}`,
+              'Content-Type': 'application/json',
+            },
+          })
+            .then(response => response.json())
+            .then(data => handleClassData(data))
+            .catch(error => handleError(error));
+        } catch (error) {
+          console.error('Error refreshing token:', error);
+          classNameElement.textContent = 'Error refreshing token';
+        }
+      } else if (data.code === 200) {
+        handleClassData(data);
       } else {
         classNameElement.textContent = 'Class not found';
       }
     })
     .catch(error => {
-      console.error('Error fetching class data:', error);
-      classNameElement.textContent = 'Error fetching class data';
+      handleError(error);
     });
+}
+
+function handleError(error) {
+  console.error('Error fetching class data:', error);
+  classNameElement.textContent = 'Error fetching class data';
+}
+
+function handleClassData(data) {
+  const classCodeElement = document.getElementById('class_code');
+  const classNameElement = document.getElementById('class_name');
+  const dropdownContent = document.getElementById('dropdown_content');
+  const courseSelect = document.getElementById('task-course');
+  const showUpdatableTaskCourse = document.getElementById("show-updatable-task-course");
+
+  classNameElement.textContent = data.data.class_name;
+  classCodeElement.textContent = data.data.class_code;
+
+  // Mengosongkan konten dropdown sebelumnya
+  dropdownContent.innerHTML = '';
+
+  // Menambahkan kursus ke dalam dropdown-content
+  data.data.courses.forEach(course => {
+    const courseLabel = document.createElement('label');
+
+    // Membuat checkbox untuk setiap kursus
+    const courseCheckbox = document.createElement('input');
+    courseCheckbox.type = 'checkbox';
+
+    // Memeriksa apakah ID kursus sudah ada di localStorage
+    const savedCourses = getSavedCourses();
+
+    courseCheckbox.checked = !savedCourses.includes(course.id); // Centang sesuai data di localStorage
+    // Menambahkan ID kursus sebagai atribut data
+    courseCheckbox.setAttribute('data-course-id', course.id);
+
+    // Menambahkan event listener untuk menyimpan status checkbox saat berubah
+    courseCheckbox.addEventListener('change', () => {
+      const updatedCourses = getSavedCourses(); // Ambil array kursus yang tersimpan
+      if (!courseCheckbox.checked) {
+        // Jika dicentang, tambahkan ID ke array
+        updatedCourses.push(course.id);
+      } else {
+        // Jika tidak dicentang, hapus ID dari array
+        const index = updatedCourses.indexOf(course.id);
+        if (index > -1) {
+          updatedCourses.splice(index, 1);
+        }
+      }
+      saveCourses(updatedCourses);
+      initializeCalendar(classId);
+    });
+
+    const courseText = document.createTextNode(` ${course.course_name}`);
+
+    courseLabel.appendChild(courseCheckbox);
+    courseLabel.appendChild(courseText);
+
+    dropdownContent.appendChild(courseLabel);
+
+    const option = document.createElement('option');
+    option.value = course.id;
+    option.textContent = course.course_name;
+    courseSelect.appendChild(option);
+    if (showUpdatableTaskCourse) {
+      showUpdatableTaskCourse.appendChild(option.cloneNode(true));
+    }
+  });
 }
 
 function getSavedCourses() {
