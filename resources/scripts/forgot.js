@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const requestBody = { email };
 
     try {
-      const response = await fetch("http://localhost:3000/auth/request-reset-password", {
+      const response = await fetch("https://pultime.api.deroo.tech/auth/request-reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

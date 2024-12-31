@@ -42,7 +42,7 @@ async function resetPassword() {
   };
 
   try {
-    const response = await fetch(`http://localhost:3000/auth/reset-password?token=${token}`, {
+    const response = await fetch(`https://pultime.api.deroo.tech/auth/reset-password?token=${token}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

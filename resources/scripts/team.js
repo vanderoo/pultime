@@ -77,7 +77,7 @@ function updateTaskStatus(taskId, progress) {
     context: 'team',
   };
 
-  fetch(`http://localhost:3000/task/${taskId}`, {
+  fetch(`https://pultime.api.deroo.tech/task/${taskId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ function updateTaskStatus(taskId, progress) {
 
 async function fetchTasksByContext(context, contextId) {
   try {
-    const apiUrl = `http://localhost:3000/tasks/by-context/${context}/${contextId}`;
+    const apiUrl = `https://pultime.api.deroo.tech/tasks/by-context/${context}/${contextId}`;
 
     const response = await fetch(apiUrl, {
       method: 'GET',
@@ -133,7 +133,7 @@ async function renderAssigneeOption() {
       throw new Error("Access token is missing");
     }
 
-    const url = `http://localhost:3000/team/${teamId}/users`;
+    const url = `https://pultime.api.deroo.tech/team/${teamId}/users`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -275,7 +275,7 @@ function handleSaveTask() {
     context: 'team',
   };
 
-  fetch(`http://localhost:3000/task/${taskId}`, {
+  fetch(`https://pultime.api.deroo.tech/task/${taskId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -320,7 +320,7 @@ function handleDeleteTask() {
     cancelButtonText: 'Batal',
   }).then((result) => {
     if (result.isConfirmed) {
-      fetch(`http://localhost:3000/task/${taskId}`, {
+      fetch(`https://pultime.api.deroo.tech/task/${taskId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -374,7 +374,7 @@ function renderTeamData(teamId) {
   }
 
   // Menggunakan fetch untuk mengambil data tim dari API
-  const apiUrl = `http://localhost:3000/team/${teamId}`;
+  const apiUrl = `https://pultime.api.deroo.tech/team/${teamId}`;
 
   fetch(apiUrl, {
     method: 'GET',
@@ -419,7 +419,7 @@ function handleLeaveTeam() {
     }
 
     // Mengirim permintaan DELETE ke API untuk menghapus user dari tim
-    fetch(`http://localhost:3000/team/${teamId}/users/${userId}`, {
+    fetch(`https://pultime.api.deroo.tech/team/${teamId}/users/${userId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`, // Menambahkan token jika diperlukan
@@ -546,7 +546,7 @@ function getTaskFormData() {
 
 // Fungsi untuk mengirim data tugas ke API
 async function submitTaskData(taskData, accessToken) {
-  const response = await fetch('http://localhost:3000/task', {
+  const response = await fetch('https://pultime.api.deroo.tech/task', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchTasksByContext(context, contextId) {
   try {
-    const baseUrl = `http://localhost:3000/tasks/by-context/${context}/${contextId}`;
+    const baseUrl = `https://pultime.api.deroo.tech/tasks/by-context/${context}/${contextId}`;
     const courses = getSavedCourses(contextId);
 
     const url = new URL(baseUrl);
@@ -157,7 +157,7 @@ function handleSaveTask() {
   };
 
   // Kirim data ke API (gunakan fetch untuk melakukan POST atau PUT request)
-  fetch(`http://localhost:3000/task/${taskId}`, {
+  fetch(`https://pultime.api.deroo.tech/task/${taskId}`, {
     method: 'PUT', // Menggunakan PUT untuk update task
     headers: {
       'Content-Type': 'application/json',
@@ -217,7 +217,7 @@ function handleDeleteTask() {
   }).then((result) => {
     if (result.isConfirmed) {
       // Jika pengguna mengonfirmasi penghapusan, kirimkan request ke API dengan token akses
-      fetch(`http://localhost:3000/task/${taskId}`, {
+      fetch(`https://pultime.api.deroo.tech/task/${taskId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -350,7 +350,7 @@ function getAccessToken() {
 
 // Fungsi untuk mengirim data tugas ke API
 async function submitTaskData(taskData, accessToken) {
-  const response = await fetch('http://localhost:3000/task', {
+  const response = await fetch('https://pultime.api.deroo.tech/task', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -401,7 +401,7 @@ function updateClassData(classId) {
   }
 
   // Menggunakan fetch untuk mengambil data kelas dari API
-  const apiUrl = `http://localhost:3000/class/${classId}`;
+  const apiUrl = `https://pultime.api.deroo.tech/class/${classId}`;
 
   fetch(apiUrl, {
     method: 'GET',
@@ -508,7 +508,7 @@ function handleLeaveClass() {
     }
 
     // Mengirim permintaan DELETE ke API
-    fetch(`http://localhost:3000/class/${classId}/users/${userId}`, {
+    fetch(`https://pultime.api.deroo.tech/class/${classId}/users/${userId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`, // Menambahkan token jika diperlukan

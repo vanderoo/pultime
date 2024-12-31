@@ -21,7 +21,7 @@ function getAllSavedCourses() {
 
 async function fetchTasks() {
   try {
-    const baseUrl = `http://localhost:3000/tasks/by-user`;
+    const baseUrl = `https://pultime.api.deroo.tech/tasks/by-user`;
     const courses = getAllSavedCourses();
 
     console.log(courses)
@@ -170,7 +170,7 @@ function handleSaveTask() {
   };
 
   // Kirim data ke API (gunakan fetch untuk melakukan POST atau PUT request)
-  fetch(`http://localhost:3000/task/${taskId}`, {
+  fetch(`https://pultime.api.deroo.tech/task/${taskId}`, {
     method: 'PUT', // Menggunakan PUT untuk update task
     headers: {
       'Content-Type': 'application/json',
@@ -229,7 +229,7 @@ function handleDeleteTask() {
   }).then((result) => {
     if (result.isConfirmed) {
       // Jika pengguna mengonfirmasi penghapusan, kirimkan request ke API dengan token akses
-      fetch(`http://localhost:3000/task/${taskId}`, {
+      fetch(`https://pultime.api.deroo.tech/task/${taskId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -353,7 +353,7 @@ function getAccessToken() {
 
 // Fungsi untuk mengirim data tugas ke API
 async function submitTaskData(taskData, accessToken) {
-  const response = await fetch('http://localhost:3000/task', {
+  const response = await fetch('https://pultime.api.deroo.tech/task', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // URL API untuk mendapatkan kelas pengguna
-  const apiUrlClasses = 'http://localhost:3000/user/current/classes';
-  const apiUrlTeams = 'http://localhost:3000/user/current/teams';
-  const apiUrlLogout = 'http://localhost:3000/auth/logout';
-  const apiUrlUser = 'http://localhost:3000/user/current';
+  const apiUrlClasses = 'https://pultime.api.deroo.tech/user/current/classes';
+  const apiUrlTeams = 'https://pultime.api.deroo.tech/user/current/teams';
+  const apiUrlLogout = 'https://pultime.api.deroo.tech/auth/logout';
+  const apiUrlUser = 'https://pultime.api.deroo.tech/user/current';
 
   const logoutButton = document.getElementById('logout-button');
   const dropdownContentClasses = document.getElementById('dropdown-content-classes');
@@ -160,7 +160,7 @@ function renderItems(items, container, type) {
     container.innerHTML = ''; // Kosongkan konten sebelumnya
     items.forEach((item) => {
       const itemLink = document.createElement('a');
-      itemLink.href = `http://localhost:5500/${type}#${item.id}`;
+      itemLink.href = `/${type}#${item.id}`;
       itemLink.setAttribute(`data-${type}-id`, item.id);
       itemLink.classList.add(`${type}-link`);
       itemLink.textContent = item[`${type}_name`]; // Sesuaikan dengan nama field
@@ -335,7 +335,7 @@ function handleCreateClass(e, createClassPopup, createClassForm) {
   }
 
   // Kirim data ke API
-  fetch('http://localhost:3000/class', {
+  fetch('https://pultime.api.deroo.tech/class', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -417,7 +417,7 @@ function handleJoinClass(e, joinClassPopup, joinClassForm) {
   };
 
   // Kirim request untuk bergabung dengan kelas
-  fetch(`http://localhost:3000/class/${classCode}/users`, {
+  fetch(`https://pultime.api.deroo.tech/class/${classCode}/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -489,7 +489,7 @@ function handleCreateTeam(e, createTeamPopup, createTeamForm) {
   }
 
   // Kirim data ke API
-  fetch('http://localhost:3000/team', {
+  fetch('https://pultime.api.deroo.tech/team', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -571,7 +571,7 @@ function handleJoinTeam(e, joinTeamPopup, joinTeamForm) {
   };
 
   // Kirim request untuk bergabung dengan tim
-  fetch(`http://localhost:3000/team/${teamCode}/users`, {
+  fetch(`https://pultime.api.deroo.tech/team/${teamCode}/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

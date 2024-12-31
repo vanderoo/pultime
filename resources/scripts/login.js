@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const apiUrl = 'http://localhost:3000/auth/login';
+    const apiUrl = 'https://pultime.api.deroo.tech/auth/login';
 
     const requestData = {
       username,
