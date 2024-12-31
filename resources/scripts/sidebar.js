@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const joinTeamForm = document.getElementById('join-team-form');
 
   try {
-    // Ambil token dari localStorage untuk otentikasi
     const accessToken = getAccessToken();
     if (!accessToken) {
       redirectToLogin();
@@ -109,9 +108,10 @@ function getAccessToken() {
 function redirectToLogin() {
   Swal.fire({
     icon: 'error',
-    title: 'Token tidak ditemukan',
-    text: 'Anda harus login terlebih dahulu.',
-    confirmButtonText: 'OK'
+    title: 'Belum Login',
+    text: 'Anda akan segera diarahkan ke halaman login.',
+    showConfirmButton: false,
+    timer: 2000,
   }).then(() => {
     window.location.href = '/login';
   });
@@ -185,7 +185,6 @@ function renderUserData(userData, usernameElement) {
  * @param {string} defaultMessage Pesan default untuk error
  */
 function handleError(error, defaultMessage) {
-  console.error('Terjadi kesalahan:', error.message);
   Swal.fire({
     icon: 'error',
     title: 'Terjadi Kesalahan',

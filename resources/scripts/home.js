@@ -24,7 +24,10 @@ async function fetchTasks() {
     const baseUrl = `https://pultime.api.deroo.tech/tasks/by-user`;
     const courses = getAllSavedCourses();
 
-    console.log(courses)
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      return [];
+    }
 
     const url = new URL(baseUrl);
     url.searchParams.append('courses', JSON.stringify(courses));
@@ -33,7 +36,7 @@ async function fetchTasks() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`, // Tambahkan token jika diperlukan
+        'Authorization': `Bearer ${accessToken}`, // Tambahkan token jika diperlukan
       },
     });
 
