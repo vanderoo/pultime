@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Forgot Password | Pultime</title>
   <link rel="stylesheet" href="../../resources/styles/forgot.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
   <div class="container">
-    <input type="checkbox" id="check">
     <div class="New_pass form">
-      <a href="/login">
-        <img src="../../resources/icon/maki_arrow.jpg" alt="Back">
-      </a>
       <header>Forgot Password?</header>
       <h5 style="text-align: center;">Kami akan mengirimkan email untuk</h5>
       <h5 style="text-align: center;">mengubah password Anda</h5>
@@ -19,6 +17,21 @@
         <input id="emailInput" type="email" placeholder="Enter your email">
         <input id="sendEmailButton" type="button" class="button" value="Email Me">
       </form>
+      <div class="link-container">
+        <span class="default-text">or</span>
+        <a href="/login" class="sign-in-link">login</a>
+      </div>
+    </div>
+    <div class="success-message">
+      <div class="success-container">
+        <h1>Recovery link sent!</h1>
+        <img src="../../resources/icon/recovery_sent.svg" alt="Sent Icon" class="icon">
+        <p>Now, check your email.</p>
+        <div class="link-container">
+          <span class="default-text">or</span>
+          <a href="/login" class="sign-in-link">login</a>
+        </div>
+      </div>
     </div>
   </div>
   <script src="../../resources/scripts/forgot.js"></script>

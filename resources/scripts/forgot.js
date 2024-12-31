@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const sendEmailButton = document.getElementById('sendEmailButton');
   const emailInput = document.getElementById('emailInput');
+  const formContainer = document.querySelector('.New_pass.form');
+  const successMessage = document.querySelector('.success-message');
 
   sendEmailButton.addEventListener('click', async (event) => {
     event.preventDefault();
@@ -39,12 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
       Swal.close();
 
       if (response.ok) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Berhasil!',
-          text: 'Email reset password telah dikirim. Silakan cek inbox Anda.',
-        });
         emailInput.value = "";
+        formContainer.style.display = 'none';
+        successMessage.style.display = 'flex';
       } else {
         const errorData = await response.json();
         Swal.fire({
