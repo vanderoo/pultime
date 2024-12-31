@@ -18,6 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const requestBody = { email };
 
+    Swal.fire({
+      title: 'Mengirim Email...',
+      text: 'Mohon tunggu sebentar.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       const response = await fetch("https://pultime.api.deroo.tech/auth/request-reset-password", {
         method: "POST",
@@ -26,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: JSON.stringify(requestBody),
       });
+
+      Swal.close();
 
       if (response.ok) {
         Swal.fire({
@@ -43,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
     } catch (error) {
+      Swal.close();
       Swal.fire({
         icon: 'error',
         title: 'Kesalahan Jaringan!',
