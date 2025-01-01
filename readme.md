@@ -1,93 +1,83 @@
-# PulTime
+# PulTime Client
 
-This is a front-end application for managing tasks, allowing users to create, update, and delete tasks. This version of the application is built with plain HTML, CSS, and JavaScript, without using any frameworks. It connects to a back-end API to manage data.
+PulTime Client adalah antarmuka berbasis web yang dibuat untuk mempermudah pengelolaan tugas menggunakan desain yang sederhana, responsif, dan interaktif.
 
-## Features
+---
 
-- **User Authentication**: Register, login, and logout functionality.
-- **Task CRUD Operations**: Create, view, update, and delete tasks.
-- **Task Categorization**: Organize tasks by category, priority, and deadlines.
-- **Responsive Design**: CSS for mobile-friendly design.
-- **Notifications**: Provides feedback for actions (success, errors, etc.).
+## Tentang PulTime
 
-## Getting Started
+PulTime adalah perangkat lunak berbasis web yang dirancang untuk membantu individu dan tim dalam mengelola tugas dan waktu mereka secara efisien. Dengan fitur seperti manajemen tugas, kalender interaktif, dan notifikasi real-time, PulTime menawarkan pengalaman unik yang mendukung kolaborasi dan produktivitas.
 
-Follow these instructions to set up and run the project locally.
+Beberapa fitur utama PulTime:
+- **Manajemen Tugas:** Membuat, mengedit, dan melacak tugas dengan mudah.
+- **Kolaborasi Tim:** Mengatur peran anggota tim.
+- **Kalender Interaktif:** Menampilkan daftar tugas secara visual.
+- **Kanban Board untuk Tugas:** Mempermudah pengelolaan tugas dengan tampilan kanban di halaman tim.
+- **Notifikasi Real-Time:** Memberi tahu pengguna tentang pembaruan tugas secara langsung.
 
-### Prerequisites
+Website ini dikembangkan menggunakan **HTML**, **CSS**, dan **Vanilla JavaScript**, serta memanfaatkan library seperti **FullCalendar.js** untuk menyediakan antarmuka yang lebih interaktif.
 
-- **Node.js** (for development server, if needed)
-- **Task Manager API** server (set up back-end API from [API repository link](https://github.com/yourusername/task-manager-api))
+---
 
-### Installation
+## Struktur Proyek
 
-1. Clone this repository:
-
-    ```bash
-    git clone https://github.com/yourusername/task-manager-client.git
-    cd task-manager-client
-    ```
-
-2. Configure environment variables:
-
-    - Create a `.env` file in the root directory.
-    - Add the following variable for API URL:
-
-        ```plaintext
-        API_URL=http://localhost:3000/api
-        ```
-
-3. Start a local server:
-
-    - For testing, you can use a simple HTTP server. Run this command from the project root:
-
-        ```bash
-        npx http-server .
-        ```
-
-4. Open your browser and go to `http://localhost:8080` (or the specified port) to view the app.
-
-## Project Structure
-
-```plaintext
-.
-├── css                  # Stylesheets
-├── js                   # JavaScript files
-│   ├── main.js          # Main application logic
-│   ├── api.js           # API interaction functions
-│   ├── auth.js          # User authentication functions
-│   └── ui.js            # UI manipulation functions
-├── index.html           # Main HTML file
-└── README.md            # Project documentation
+```
+pultime-client/
+├── class/
+│   └── index.html         # Halaman kelas
+├── login/
+│   ├── forgot/            # Halaman lupa password
+│   │   └── index.html
+│   ├── reset/             # Halaman reset password
+│   │   └── index.html
+│   └── index.html         # Halaman login
+├── resources/
+│   ├── icon/              # Ikon untuk tampilan antarmuka
+│   ├── images/            # Gambar untuk website
+│   ├── scripts/           # File JavaScript tambahan
+│   └── styles/            # File CSS tambahan
+├── signup/
+│   └── index.html         # Halaman pendaftaran
+├── team/
+│   └── index.html         # Halaman tim
+├── index.html             # Halaman utama
+└── readme.md              # Dokumentasi proyek
 ```
 
-## Key JavaScript Files
+---
 
-- **main.js**: Initializes the app and handles page navigation.
-- **api.js**: Contains functions to make API calls (e.g., `login`, `getTasks`, `createTask`).
-- **auth.js**: Manages user authentication status and session handling.
-- **ui.js**: Handles DOM manipulation, such as showing/hiding elements, displaying task lists, and handling form submissions.
+## Instalasi
 
-## API Integration
+1. Clone repository ini ke dalam direktori lokal Anda:
+   ```bash
+   git clone https://github.com/username/pultime-client.git
+   cd pultime-client
+   ```
 
-The front end communicates with the Task Manager API by making HTTP requests defined in `api.js`. Update the `API_URL` in the `.env` file to match your back-end server URL.
+2. Pastikan semua file dan struktur sudah sesuai.
 
-## Technologies Used
+3. Buka file `index.html` di browser untuk memulai.
 
-- **HTML**: Structure of the web pages.
-- **CSS**: Styling for the application, including responsiveness.
-- **JavaScript**: Dynamic functionality and API integration.
-- **Fetch API**: For making HTTP requests.
+---
 
-## Contributing
+## Teknologi yang Digunakan
 
-Feel free to contribute by creating a pull request. For major changes, please open an issue first to discuss the change.
+- **HTML** - Untuk struktur halaman.
+- **CSS** - Untuk desain dan tata letak.
+- **Vanilla JavaScript** - Untuk logika interaktif.
+- **FullCalendar.js** - Untuk kalender interaktif.
+- **FontAwesome** - Untuk ikon.
 
-## License
+---
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Kontribusi
 
-## Acknowledgments
+Jika Anda ingin berkontribusi pada proyek ini:
+1. Fork repository ini.
+2. Buat branch baru untuk fitur atau perbaikan Anda.
+3. Lakukan commit dengan deskripsi yang jelas.
+4. Kirimkan pull request ke branch `main`.
 
-- [MDN Web Docs](https://developer.mozilla.org/) for HTML, CSS, and JavaScript resources.
-- [Fetch API Documentation](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+---
+
+**Selamat Menggunakan PulTime!** 🎉
