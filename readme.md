@@ -1,6 +1,6 @@
-# PulTime Client
+# PulTime
 
-PulTime Client adalah antarmuka berbasis web yang dibuat untuk mempermudah pengelolaan tugas menggunakan desain yang sederhana, responsif, dan interaktif.
+PulTime adalah antarmuka berbasis web yang dibuat untuk mempermudah pengelolaan tugas menggunakan desain yang sederhana, responsif, dan interaktif.
 
 ---
 
@@ -22,7 +22,7 @@ Website ini dikembangkan menggunakan **HTML**, **CSS**, dan **Vanilla JavaScript
 ## Struktur Proyek
 
 ```
-pultime-client/
+pultime/
 ├── class/
 │   └── index.html         # Halaman kelas
 ├── login/
@@ -50,8 +50,8 @@ pultime-client/
 
 1. Clone repository ini ke dalam direktori lokal Anda:
    ```bash
-   git clone https://github.com/username/pultime-client.git
-   cd pultime-client
+   git clone https://github.com/vanderoo/pultime.git
+   cd pultime
    ```
 
 2. Pastikan semua file dan struktur sudah sesuai.
