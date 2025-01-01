@@ -6,14 +6,14 @@ PulTime Client adalah antarmuka berbasis web yang dibuat untuk mempermudah penge
 
 ## Tentang PulTime
 
-PulTime adalah perangkat lunak berbasis web yang dirancang untuk membantu individu dan tim dalam mengelola tugas dan waktu mereka secara efisien. Dengan fitur seperti manajemen tugas, kalender interaktif, dan notifikasi real-time, PulTime menawarkan pengalaman unik yang mendukung kolaborasi dan produktivitas.
+PulTime adalah perangkat lunak berbasis web yang dirancang untuk membantu individu dan tim dalam mengelola tugas dan waktu mereka secara efisien. Dengan fitur seperti manajemen tugas, kalender interaktif, dan notifikasi berbasis email, PulTime menawarkan pengalaman unik yang mendukung kolaborasi dan produktivitas.
 
 Beberapa fitur utama PulTime:
 - **Manajemen Tugas:** Membuat, mengedit, dan melacak tugas dengan mudah.
 - **Kolaborasi Tim:** Mengatur peran anggota tim.
 - **Kalender Interaktif:** Menampilkan daftar tugas secara visual.
 - **Kanban Board untuk Tugas:** Mempermudah pengelolaan tugas dengan tampilan kanban di halaman tim.
-- **Notifikasi Real-Time:** Memberi tahu pengguna tentang pembaruan tugas secara langsung.
+- **Notifikasi Berbasis Email:** Memberi tahu pengguna jika tugas mendekati tenggat waktu.
 
 Website ini dikembangkan menggunakan **HTML**, **CSS**, dan **Vanilla JavaScript**, serta memanfaatkan library seperti **FullCalendar.js** untuk menyediakan antarmuka yang lebih interaktif.
 
